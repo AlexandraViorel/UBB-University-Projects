@@ -1,0 +1,5 @@
+3;Catalin
+2;Andrei
+1;Ale
+4;Alex
+12;Cristi
