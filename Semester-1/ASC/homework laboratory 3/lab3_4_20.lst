@@ -1,0 +1,71 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  
+    11                                  ; our data is declared here (the variables needed by our program)
+    12                                  segment data use32 class=data
+    13                                      ; ...
+    14 00000000 0001                        a dw 100h
+    15 00000002 43                          b db 43h
+    16 00000003 33221100                    e dd 112233h
+    17 00000007 3344556677880000            x dq 887766554433h
+    18 0000000F 02                          a1 db 02h
+    19                                      
+    20                                  ; our code starts here
+    21                                  segment code use32 class=code
+    22                                      start:
+    23                                          ; ...
+    24                                          ; x - b + 8 + (2 * a - b) / (b * b) + e
+    25                                          ; signed
+    26 00000000 668B1D[00000000]                mov BX, [a]
+    27 00000007 A0[0F000000]                    mov AL, [a1]
+    28 0000000C 6698                            cbw
+    29 0000000E 66F7E3                          mul BX 
+    30                                          ; AX = 2 * a 
+    31 00000011 6689C3                          mov BX, AX
+    32                                          ; BX = 2 * a
+    33 00000014 A0[02000000]                    mov AL, [b]
+    34 00000019 6698                            cbw
+    35                                          ; AX = b 
+    36 0000001B 6629C3                          sub BX, AX 
+    37                                          ; BX = 2 * a - b
+    38 0000001E A0[02000000]                    mov AL, [b]
+    39 00000023 F62D[02000000]                  imul byte [b]
+    40                                          ; AX = b * b
+    41 00000029 6689C1                          mov CX, AX 
+    42                                          ; CX = b * b
+    43 0000002C 6689D8                          mov AX, BX
+    44                                          ; AX = 2 * a - b
+    45 0000002F 66F7F9                          idiv word CX 
+    46                                          ; AX = (2 * a - b) / (b * b)
+    47 00000032 98                              cwde
+    48 00000033 0305[03000000]                  add EAX, [e]
+    49 00000039 83C008                          add EAX, 8h
+    50                                          ; EAX = (2 * a - b) / (b * b) + e + 8h
+    51 0000003C 89C3                            mov EBX, EAX 
+    52 0000003E A0[02000000]                    mov AL, [b]
+    53 00000043 6698                            cbw 
+    54 00000045 98                              cwde 
+    55                                          ; converts b from byte to doubleword 
+    56 00000046 29C3                            sub EBX, EAX
+    57                                          ; EBX = (2 * a - b) / (b * b) + e + 8h - b
+    58 00000048 89D8                            mov EAX, EBX 
+    59 0000004A 99                              cdq
+    60                                          ; converts dword to qword
+    61                                          ; EDX:EAX = (2 * a - b) / (b * b) + e + 8h - b
+    62 0000004B 8B1D[07000000]                  mov EBX, dword [x]
+    63 00000051 8B0D[0B000000]                  mov ECX, dword [x + 4]
+    64 00000057 01D8                            add EAX, EBX 
+    65 00000059 11CA                            adc EDX, ECX 
+    66                                          ; EDX:EAX = x + (2 * a - b) / (b * b) + e + 8h - b
+    67                                          
+    68                                     
+    69                                          ; exit(0)
+    70 0000005B 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    71 0000005D FF15[00000000]                  call    [exit]       ; call exit to terminate the program

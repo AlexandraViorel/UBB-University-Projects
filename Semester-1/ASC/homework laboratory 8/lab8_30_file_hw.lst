@@ -1,0 +1,104 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  extern scanf
+     9                                  extern fopen
+    10                                  extern fprintf
+    11                                  extern fclose
+    12                                  extern strlen
+    13                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+    14                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    15                                  import scanf msvcrt.dll
+    16                                  import fopen msvcrt.dll
+    17                                  import fprintf msvcrt.dll
+    18                                  import fclose msvcrt.dll
+    19                                  import strlen msvcrt.dll
+    20                                                            
+    21                                                            
+    22                                  ; our data is declared here (the variables needed by our program)
+    23                                  segment data use32 class=data
+    24                                      ; ...
+    25 00000000 <res 00000014>              a times 20 resb 1
+    26                                      
+    27 00000014 257300                      read_format db "%s", 0
+    28 00000017 257300                      print_format db "%s", 0
+    29 0000001A 33302E74787400              f db "30.txt", 0
+    30 00000021 7700                        mode db "w", 0
+    31 00000023 <res 00000004>              f_descriptor resd 1
+    32                                      dollar equ '$'
+    33 00000027 00                          ok db 0
+    34                                  
+    35                                  ; our code starts here
+    36                                  segment code use32 class=code
+    37                                      start:
+    38                                          ; 30. A file name (defined in data segment) is given. Create a file with the given name, then read words from the keyboard until character '$' is read from the keyboard. Write only the words that contain at 
+    39                                          
+    40                                          ; we will open the file 
+    41                                          
+    42 00000000 68[21000000]                    push mode
+    43 00000005 68[1A000000]                    push f
+    44 0000000A FF15[00000000]                  call [fopen]
+    45 00000010 83C408                          add ESP, 4 * 2
+    46                                          
+    47 00000013 A3[23000000]                    mov [f_descriptor], EAX 
+    48 00000018 83F800                          cmp EAX, 0
+    49 0000001B 746F                            je final
+    50                                              back:
+    51                                                  ; we read a word
+    52 0000001D 68[00000000]                            push dword a
+    53 00000022 68[14000000]                            push read_format
+    54 00000027 FF15[00000000]                          call [scanf]
+    55 0000002D 83C408                                  add ESP, 4 * 2
+    56                                                  
+    57                                                  ; we check if the word is not the dollar sign
+    58 00000030 A0[00000000]                            mov AL, [a]
+    59 00000035 3C24                                    cmp AL, dollar
+    60                                                  
+    61 00000037 7453                                    je final1
+    62                                                      ; we put 0 in ok which will help us know if the word contains a digit or not 
+    63                                                      ; if ok == 0  => the word does not have any digit
+    64                                                      ; if ok == 1  => the word has at least one digit 
+    65 00000039 C605[27000000]00                            mov byte[ok], 0
+    66                                                      ; we find the length of the word 
+    67 00000040 BE[00000000]                                mov ESI, a
+    68 00000045 68[00000000]                                push a 
+    69 0000004A FF15[00000000]                              call [strlen]
+    70 00000050 83C404                                      add ESP, 4 * 1
+    71                                                      
+    72                                                      ; we put the length of the word in ECX
+    73 00000053 89C1                                        mov ECX, EAX 
+    74                                                      ; we check if the word has at least one digit and if it has we will put 1 in ok
+    75                                                      back2:
+    76 00000055 AC                                              lodsb
+    77 00000056 3C30                                            cmp AL, '0'
+    78 00000058 7C0B                                            jl here
+    79 0000005A 3C39                                            cmp AL, '9'
+    80 0000005C 7F07                                            jg here 
+    81 0000005E C605[27000000]01                                mov byte[ok], 1
+    82                                                          here:
+    83 00000065 E2EE                                        loop back2
+    84                                                      ; if ok == 1  => we will write the word in the file 
+    85 00000067 803D[27000000]01                            cmp byte[ok], 1
+    86 0000006E 751A                                        jnz here2
+    87 00000070 FF35[00000000]                                  push dword [a]
+    88 00000076 68[17000000]                                    push print_format
+    89 0000007B FF35[23000000]                                  push dword[f_descriptor]
+    90 00000081 FF15[00000000]                                  call [fprintf]
+    91 00000087 83C40C                                          add ESP, 4 * 3
+    92                                                      here2:
+    93 0000008A EB91                                    jmp back
+    94                                          final:
+    95                                          final1:
+    96                                          
+    97                                          ; we close the file 
+    98 0000008C FF35[23000000]                  push dword[f_descriptor]
+    99 00000092 FF15[00000000]                  call [fclose]
+   100 00000098 83C404                          add ESP, 4 * 1
+   101                                      
+   102                                          ; exit(0)
+   103 0000009B 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   104 0000009D FF15[00000000]                  call    [exit]       ; call exit to terminate the program

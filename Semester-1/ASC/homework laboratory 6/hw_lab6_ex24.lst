@@ -1,0 +1,44 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  
+    11                                  ; our data is declared here (the variables needed by our program)
+    12                                  segment data use32 class=data
+    13                                      ; ...
+    14 00000000 78563412B32A815323-         s dd 12345678h, 53812AB3h, 8973DF23h
+    14 00000009 DF7389             
+    15                                      len equ ($ - s) / 4
+    16 0000000C 00000000<rept>              s1 times len dd 0
+    17 00000018 04                          four db 4
+    18                                  
+    19                                  ; our code starts here
+    20                                  segment code use32 class=code
+    21                                      start:
+    22                                          ; ...
+    23                                          ; 24. Being given a string of doublewords, build another string of doublewords which will include only the doublewords from the given string ;which have an even number of bits with the value 1.
+    24 00000000 BE[00000000]                    mov ESI, s
+    25 00000005 BF[0C000000]                    mov EDI, s1
+    26 0000000A FC                              cld 
+    27 0000000B BB00000000                      mov EBX, 0
+    28                                          ; we parse the string from left to right (DF = 0)
+    29 00000010 B903000000                      mov ECX, len
+    30 00000015 E308                            jecxz end
+    31                                          repeat:
+    32 00000017 AD                                  lodsd
+    33 00000018 39D8                                cmp EAX, EBX
+    34 0000001A 7A01                                jpe condition
+    35 0000001C AB                                      stosd
+    36                                              condition:
+    37 0000001D E2F8                            loop repeat
+    38                                          end:
+    39                                          
+    40                                      
+    41                                          ; exit(0)
+    42 0000001F 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    43 00000021 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

@@ -1,0 +1,74 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  extern scanf
+     9                                  extern printf
+    10                                  
+    11                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+    12                                  import scanf msvcrt.dll
+    13                                  import printf msvcrt.dll
+    14                                  
+    15                                  
+    16                                  ; our data is declared here (the variables needed by our program)
+    17                                  segment data use32 class=data
+    18                                      ; ...
+    19 00000000 <res 00000004>              a resd 1
+    20 00000004 <res 00000004>              b resd 1
+    21 00000008 256400                      read_format db "%d", 0
+    22 0000000B 54686520736D616C6C-         print_format db "The smallest number read is %d", 13, 0
+    22 00000014 657374206E756D6265-
+    22 0000001D 722072656164206973-
+    22 00000026 2025640D00         
+    23                                      
+    24                                  
+    25                                  ; our code starts here
+    26                                  segment code use32 class=code
+    27                                      start:
+    28                                          ; 30. Read numbers (in base 10) in a loop until the digit '0' is read from the keyboard. Determine and display the smallest number from those that have been read.
+    29                                          
+    30                                          ; we will store the smallest number in the address of b
+    31                                          
+    32                                          ; we will read the first number and store it in the address of b because it is the smallest number read
+    33 00000000 68[04000000]                    push b 
+    34 00000005 68[08000000]                    push read_format
+    35 0000000A FF15[00000000]                  call [scanf]
+    36 00000010 83C408                          add ESP, 4 * 2
+    37                                          
+    38 00000013 8B0D[04000000]                  mov ECX, [b] ; we use ECX to see if the number read is 0
+    39 00000019 E333                            jecxz endfor
+    40                                              repeta 
+    40          ******************       warning: label alone on a line without a colon might be in error [-w+orphan-labels]
+    41                                                  ; we will read the rest of the numbers and store them in the address of a
+    42 0000001B 68[00000000]                            push a
+    43 00000020 68[08000000]                            push read_format
+    44 00000025 FF15[00000000]                          call [scanf]
+    45 0000002B 83C408                                  add ESP, 4 * 2
+    46                                                  
+    47 0000002E 8B15[04000000]                          mov EDX, [b] ; in EDX we will store the smallest number read until now 
+    48 00000034 8B1D[00000000]                          mov EBX, [a] ; in EBX we will store the last number read
+    49 0000003A 8B0D[00000000]                          mov ECX, [a] ; we will use ECX to see if the last number read is 0
+    50 00000040 E30C                                    jecxz endf   ; if the last number read is 0 we will not consider it the smallest number
+    51                                  
+    52 00000042 39D3                                    cmp EBX, EDX ; we compare the numbers in order to see which one is smaller
+    53 00000044 7F06                                        jg greater   
+    54 00000046 891D[04000000]                                  mov dword [b], EBX   ; if EBX < EDX we will put the number from EBX in the adress b 
+    55                                                      greater:
+    56 0000004C E2CD                                loop repeta
+    57                                            endf
+    57          ******************       warning: label alone on a line without a colon might be in error [-w+orphan-labels]
+    58                                          endfor
+    58          ******************       warning: label alone on a line without a colon might be in error [-w+orphan-labels]
+    59                                                  
+    60 0000004E FF35[04000000]                  push dword [b] 
+    61 00000054 68[0B000000]                    push print_format
+    62 00000059 FF15[00000000]                  call [printf]
+    63 0000005F 83C408                          add ESP, 4 * 2
+    64                                          
+    65                                      
+    66                                          ; exit(0)
+    67 00000062 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    68 00000064 FF15[00000000]                  call    [exit]       ; call exit to terminate the program
