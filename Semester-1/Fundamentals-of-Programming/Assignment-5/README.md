@@ -3,7 +3,7 @@
 
 - The program must provide a menu-driven console user interface.
 - Use classes to represent the following:
-    - The domain entity (`complex`,  `expense`,  `student`, `book`)
+    - The domain entity (`student`)
     - A services class that implements the required functionalities
     - The ui class which implements the user interface
 - Have 10 programmatically generated entries in the application at start-up.
