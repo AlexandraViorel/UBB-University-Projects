@@ -1,0 +1,6 @@
+file1;revised;ale;ili
+file2;not_revised;ale;no
+file3;not_revised;ale;no
+file4;revised;dan;ili
+file5;revised;ale;dan
+file6;revised;dan;ale
