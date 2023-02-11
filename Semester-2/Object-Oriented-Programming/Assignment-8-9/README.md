@@ -29,7 +29,7 @@ For your solution to the previous assignment (Assignment 05-06), add the followi
     `CSV` and `HTML` files are used to save and display data to the user; they act as program outputs, so data should not be read from them!
 
 5. Add a new command, allowing the user to see the:
-    * adoption list
+    * adoption list\
 Displaying the list means opening the saved file (`CSV` or `HTML`) with the correct application (`CSV` files using Notepad, Notepad++, Microsoft Excel etc. and `HTML` files using a browser)
 
 6. Create a UML class diagram for your entire application. For this, you can use any tool that you like ([StarUML](https://staruml.io/) or [LucidChart](https://www.lucidchart.com/) are only some examples. Many other options exist.
