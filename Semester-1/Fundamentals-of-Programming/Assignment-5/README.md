@@ -1,7 +1,6 @@
 # 💻 Assignment 05
 ## Requirements
 
-- You will be given one of the problems below to solve using feature-driven development
 - The program must provide a menu-driven console user interface.
 - Use classes to represent the following:
     - The domain entity (`complex`,  `expense`,  `student`, `book`)
