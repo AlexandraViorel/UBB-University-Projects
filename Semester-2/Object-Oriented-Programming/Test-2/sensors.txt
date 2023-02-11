@@ -1,0 +1,7 @@
+98
+has WiFi
+HUMIDITY = Producer: abd,  Recordings: 12.000000 23.000000 , Price: 4.000000, Alert: true
+TEMPERATURE = Producer: ale,  Recordings: 12.000000 23.000000  Diameter: 2.000000, Length: 12.000000, Price: 17.000000, Alert: false
+TEMPERATURE = Producer: producer1,  Recordings: 9.000000 50.000000  Diameter: 10.000000, Length: 100.000000, Price: 9.000000, Alert: true
+HUMIDITY = Producer: producer2,  Recordings: 9.000000 50.000000 , Price: 4.000000, Alert: false
+SMOKE = Producer: producer3,  Recordings: 9.000000 50.000000 , Price: 25.000000, Alert: false
