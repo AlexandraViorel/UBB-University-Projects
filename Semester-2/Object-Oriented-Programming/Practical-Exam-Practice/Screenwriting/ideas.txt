@@ -1,0 +1,3 @@
+idea1,proposed,ale,2
+idea2,accepted,ili,1
+idea3,accepted,dan,3

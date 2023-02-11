@@ -1,0 +1,7 @@
+Act 1
+idea2 {ili}
+id3 {dan}
+Act 2
+id {dan}
+Act 3
+idea3 {dan}
