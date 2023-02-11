@@ -1,0 +1,10 @@
+Yoda,German Shepherd,1,https://en.wikipedia.org/wiki/German_Shepherd#/media/File:German_Shepherd_-_DSC_0346_(10096362833).jpg
+Rex,Husky,5,https://ro.wikipedia.org/wiki/Husky_Siberian#/media/Fi%C8%99ier:Siberian-husky.jpg
+Bruno,Labrador Retriever,2,https://en.wikipedia.org/wiki/Labrador_Retriever#/media/File:Labrador_on_Quantock_(2175262184).jpg
+Coco,Pudel,7,https://ro.wikipedia.org/wiki/Pudel#/media/Fi%C8%99ier:Silver_Miniature_Poodle_stacked.jpg
+Falco,Chihuahua,1,https://ro.wikipedia.org/wiki/Chihuahua_(ras%C4%83_canin%C4%83)#/media/Fi%C8%99ier:Chihuahua1_bvdb.jpg
+Grivei,Boxer,5,https://ro.wikipedia.org/wiki/Boxer_(c%C3%A2ine)#/media/Fi%C8%99ier:Boxer_puppy_fawn.jpg
+Kiki,Chow chow,4,https://ro.wikipedia.org/wiki/Chow_chow#/media/Fi%C8%99ier:01_Chow_Chow.jpg
+Aky,Rottweiler,1,https://ro.wikipedia.org/wiki/Rottweiler#/media/Fi%C8%99ier:Rottweiler.jpg
+Hugo,Golden Retriever,5,https://ro.wikipedia.org/wiki/Golden_Retriever#/media/Fi%C8%99ier:Golden_retriever-035.JPG
+s,s,2,d
