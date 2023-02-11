@@ -1,0 +1,35 @@
+from src.util.util import MyContainer
+
+
+class BookRepository:
+    def __init__(self, books_data_dictionary=None):
+        if books_data_dictionary is None:
+            books_data_dictionary = {}
+        if books_data_dictionary is MyContainer:
+            self._books_data = books_data_dictionary
+        else:
+            self._books_data = MyContainer(books_data_dictionary)
+
+    def books_data_list(self):
+        return self._books_data.list()
+
+    # def __setitem__(self, key, value):
+    #     self._books_data[key] = value
+    #
+    # def __delitem__(self, key):
+    #     del self._books_data[key]
+    #
+    # def __len__(self):
+    #     return len(self._books_data)
+
+    def add_book(self, given_book):
+        # self._books_data[int(given_book.book_id)] = given_book
+        self._books_data.add(int(given_book.book_id), given_book)
+
+    def remove_book(self, book_id):
+        # del self._books_data[int(book_id)]
+        self._books_data.remove(int(book_id))
+
+    def update_book(self, updated_book):
+        # self._books_data[updated_book.book_id] = updated_book
+        self._books_data.update(updated_book.book_id, updated_book)
