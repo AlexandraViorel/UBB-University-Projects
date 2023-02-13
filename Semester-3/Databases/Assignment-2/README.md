@@ -31,7 +31,7 @@ You must use:
 
 - arithmetic expressions in the SELECT clause in at least 3 queries;
 - conditions with AND, OR, NOT, and parentheses in the WHERE clause in at least 3 queries;
-- DISTINCT in at least 3 queries, ORDER BY in at least 2 queries, and TOP in at least 2 queries.
+- DISTINCT in at least 3 queries, ORDER BY in at least 2 queries, and TOP in at least 2 queries.\
 Obs.
 
 - You can use views in at most 3 queries.
