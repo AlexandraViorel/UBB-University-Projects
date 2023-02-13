@@ -1,1 +1,18 @@
 # UBB-University-Projects
+
+* [Semester 1](Semester-1/)
+    * [ Computational Logic](Semester1/Computational%20Logic/)
+    * [ Computer Systems Architecture](Semester1/ASC/)
+    * [ Fundamentals of Programming](Semester1/Fundamentals-of-Programming/)
+* [Semester 2](Semester-2/)
+    * [ Data Structures and Algorithms](Semester-2/Data-Structures-and-Algorithms/)
+    * [ Dynamical Systems](Semester2/Dynamical%20Systems/)
+    * [ Graph Algorithms](Semester-2/Graph-Algorithms/)
+    * [ Object Oriented Programming](Semester-2/Object-Oriented-Programming/)
+    * [ Operating Systems](Semester-2/Operating-Systems/)
+* [Semester 3](Semester-3/)
+    * [ Advanced Programming Methods](Semester-3/Advanced-Programming-Methods/)
+    * [ Computer Networks](Semester-3/Computer-Networks/)
+    * [ Databases](Semester-3/Databases/)
+    * [ Functional & logic programming](Semester-3/Functional-and-Logic-Programming/)
+    * [ Probabilities & statistics](Semester-3/Probabilities-and-Statistics/)
