@@ -1,0 +1,98 @@
+; exercise 4
+
+; a) Write a function to return the sum of two vectors.
+
+; Mathematical model:
+; sumVec(l1l2...ln, p1p2...pm) = { p1p2...pm, if n = 0
+;                                { l1l2...ln, if m = 0
+;                                { {l1+p1} U sumVec(l2...ln, p2...pn), otherwise
+
+(defun sumVec (l1 l2)
+    (cond 
+        ((null l1) l2)
+        ((null l2) l1)
+        (t (mapcar #'+ l1 l2))
+    )
+)
+
+(print (sumVec '(1 2 3) '(1 2 3)))
+
+
+; b) Write a function to get from a given list the list of all atoms, on any level, but on the same order. 
+; Example: (((A B) C) (D E)) ==> (A B C D E)
+
+(defun myappend (l1 l2)
+    (cond
+        ((and (null l1) (listp l2)) l2)
+        ((and (null l1) (atom l2)) (list l2))
+        (t (cons (car l1) (myappend (cdr l1) l2)))
+    )
+)
+
+ ; mathematical model:
+ ; liniarize(l1l2...ln) = { NIL, if n = 0
+ ;                        { liniarize(l1) U liniarize(l2...ln), if l1 is a list
+ ;                        { {l1} U liniarize(l2...ln), otherwise
+
+
+ (defun liniarize (l)
+    (cond
+        ((null l) NIL)
+        ((listp (car l)) (myappend (liniarize (car l)) (liniarize (cdr l))))
+        (t (myappend (list (car l)) (liniarize (cdr l))))
+    )
+ )
+
+ (print (liniarize '((((A B) C) (D E)))))
+
+
+ ; c) Write a function that, with a list given as parameter, inverts only continuous sequences of atoms. 
+ ; Example: (a b c (d (e f) g h i)) ==> (c b a (d (f e) i h g))
+
+ ; mathematical model:
+ ; invertCont(l1l2...ln, aux) = { aux, if n = 0
+ ;                              { myappend(aux, myappend(list(invertCont(l1, nil), invertCont(l2...ln, nil)))), 
+ ;                                          if l1 is a list
+ ;                              { invertCont(l2...ln, myappend(list(l1), aux)), otherwise
+
+ (defun invertCont (l aux)
+    (cond
+        ((null l) aux)
+        ((listp (car l)) (myappend aux (myappend (list (invertCont (car l) nil)) (invertCont (cdr l) nil))))
+        (t (invertCont (cdr l) (myappend (list (car l)) aux)))
+    )
+ )
+
+ (print (invertCont '((a b c (d (e f) g h i))) nil))
+
+
+; d) Write a list to return the maximum value of the numerical atoms from a list, at superficial level.
+
+; mathematical model:
+; mymax(a, b) = { a, if b is not a number
+;               { b, if a is not a number
+;               { a, if a>b
+;               { b, otherwise
+
+(defun mymax (a b)
+    (cond
+        ((not (numberp b)) a)
+        ((not (numberp a)) b)
+        ((> a b) a)
+        (t b)
+    )
+)
+
+; mathematical model:
+; maxlist(l1l2...ln) = { NIL, if n = 0
+;                      { mymax(l1, maxlist(l2...ln)), otherwise
+
+(defun maxlist (l)
+    (cond
+        ((null l) nil)
+        (t (mymax (car l) (maxlist (cdr l))))
+    )
+)
+
+(print (maxlist '(1 2 3 (2 3 4))))
+

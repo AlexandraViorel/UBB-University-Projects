@@ -1,0 +1,86 @@
+; exercise 5
+
+; a) Write twice the n-th element of a linear list. Example: for (10 20 30 40 50) and n=3 will produce 
+; (10 20 30 30 40 50).
+
+; mathematical model:
+; duplicate(l1l2...lm, n, c) = { nil, if m = 0
+;                              { {l1} U {l1} U duplicate(l2...lm, n, c+1), if c = n
+;                              { {l1} U duplicate(l2...lm, n, c+1), otherwise
+
+(defun duplicate (l n c)
+    (cond
+        ((null l) nil)
+        ((equal n c) (cons (car l) (cons (car l) (duplicate (cdr l) n (+ c 1)))))
+        (t (cons (car l) (duplicate (cdr l) n (+ c 1))))
+    )
+)
+
+(print (duplicate '(10 20 30 40) 3 1))
+
+
+; b) Write a function to return an association list with the two lists given as parameters. 
+; Example: (A B C) (X Y Z) --> ((A.X) (B.Y) (C.Z)).
+
+; mathematical model:
+; association(l1l2...ln, p1p2...pm) = { nil, if n = m = 0
+;                                     { appendd(list({nil} U {p1}), association(nil, p2...pm)), if n = 0
+;                                     { appendd(list({l1} U {nil}), association(l2...ln, nil)), if m = 0
+;                                     { appendd(list({l1} U {p1}), association(l2...ln, p2...pm)), otherwise
+
+(defun appendd (l1 l2)
+    (cond
+        ((null l1) l2)
+        (t (cons (car l1) (appendd(cdr l1) l2)))
+    )
+)
+
+(defun association (l1 l2)
+    (cond
+        ((and (null l1) (null l2)) nil)
+        ((null l1) (appendd (list (cons nil (car l2))) (association nil (cdr l2))))
+        ((null l2) (appendd (list (cons (car l1) nil)) (association (cdr l1) nil)))
+        (t (appendd (list (cons (car l1) (car l2))) (association (cdr l1) (cdr l2))))
+    )
+)
+
+(print (association '(A B C) '(X Y Z)))
+
+
+; c) Write a function to determine the number of all sublists of a given list, on any level. 
+; A sublist is either the list itself, or any element that is a list, at any level. Example: 
+; (1 2 (3 (4 5) (6 7)) 8 (9 10)) => 5 lists:
+; (list itself, (3 ...), (4 5), (6 7), (9 10)).
+
+; mathematical model:
+; sublists(l1l2...ln) = { 0, if n = 0
+;                       { 1 + sublists(l1) + sublists(l2...ln), if l1 is a list
+;                       { sublists(l2...ln), otherwise
+
+(defun sublists (l)
+    (cond
+        ((null l) 1)
+        ((listp (car l)) (+ (sublists (car l)) (sublists (cdr l))))
+        (t (sublists (cdr l)))
+    )
+)
+
+(print (sublists '(1 2 (3 (4 5) (6 7)) 8 (9 10))))
+
+
+; d) Write a function to return the number of all numerical atoms in a list at superficial level.
+
+; mathematical model:
+; count(l1l2...ln) = { 0, if n = 0
+;                    { 1 + count(l2...ln), if l1 is a number
+;                    { count(l2...ln), otherwise
+
+(defun countt (l)
+    (cond
+        ((null l) 0)
+        ((numberp (car l)) (+ 1 (countt (cdr l))))
+        (t (countt (cdr l)))
+    )
+)
+
+(print (countt '(1 2 a (2 3) b (a) 5)))

@@ -1,0 +1,122 @@
+; exercise 12 
+
+; a) Write a function to return the dot product of two vectors. 
+
+; mathematical model:
+; dotProduct(l1l2...ln, k1k2...km) = { 0, if n = 0
+;                                    { l1*k1 + dotProduct(l2...ln, k2...km), otherwise
+
+(defun dotProduct (a b)
+    (cond 
+        ((null a) 0)
+        (t (+ (* (car a) (car b)) (dotProduct (cdr a) (cdr b))))
+    )
+)
+
+(print (dotProduct '(1 3 -5) '(4 -2 -1)))
+
+; b) Write a function to return the maximum value of all the numerical atoms of a list, at any level.
+
+; mathematical model:
+; mymax(a, b) = { a, if b is not a number
+;               { b, if a is not a number
+;               { a, if a >= b
+;               { b, otherwise
+
+(defun mymax (a b)
+    (cond
+        ((not (numberp b)) a)
+        ((not (numberp a)) b)
+        ((>= a b) a)
+        (t b)
+    )
+)
+
+; mathematical model:
+; maxlist(l1l2...ln) = { nil, if n = 0
+;                      { mymax(l1, maxlist(l2...ln)), if l1 is an atom
+;                      { mymax(maxlist(l1), maxlist(l2...ln)), otherwise
+
+(defun maxlist (l)
+    (cond
+        ((null l) nil)
+        ((atom (car l)) (mymax (car l) (maxlist (cdr l))))
+        (t (mymax (maxlist (car l)) (maxlist (cdr l))))
+    )
+)
+
+
+;c) All permutations to be replaced by: Write a function to compute the result of an arithmetic expression
+; memorised in preorder on a stack. Examples:
+; (+ 1 3) ==> 4 (1 + 3)
+; (+ * 2 4 3) ==> 11 [((2 * 4) + 3)
+; (+ * 2 4 - 5 * 2 2) ==> 9 ((2 * 4) + (5 - (2 * 2))
+
+
+; mathematical model:
+; myappend(l1l2...ln, p1p2...pm) = { p1p2...pm, if n = 0
+;                                  { {l1} U myappend(l2...ln, p1p2...pn), otherwise
+
+(defun myappend (l p)
+    (cond
+        ((null l) p)
+        (t (cons (car l) (myappend (cdr l) p)))
+    )
+)
+
+; mathematical model:
+; myreverse(l1l2...ln) = { nil, if n = 0
+;                        { myappend(myreverse(l2...ln), list(myreverse(l1))), if l1 is a list
+;                        { myappend(myreverse(l2...ln), list(l1)), otherwise
+
+
+(defun myreverse (l)
+    (cond
+        ((null l) nil)
+        ((listp (car l)) (myappend (myreverse (cdr l)) (list (myreverse (car l)))))
+        (t (myappend (myreverse (cdr l)) (list (car l))))
+    )
+)
+
+; mathematical model:
+; evaluate(l1l2...ln, s1s2...sm) = { s1, if n = 0
+;                                  { evaluate(l2...ln, {l1} U s1s2...sm), if l1 is a number
+;                                  { evaluate(l2...ln, {s1 * s2} U s3...sm), if l1 = *
+;                                  { evaluate(l2...ln, {s1 + s2} U s3...sm), if l1 = +
+;                                  { evaluate(l2...ln, {s1 / s2} U s3...sm), if l1 = /
+;                                  { evaluate(l2...ln, {s1 - s2} U s3...sm), if l1 = -
+
+(defun evaluate (l s)
+    (cond
+        ((null l) (car s))
+        ((numberp (car l)) (evaluate (cdr l) (cons (car l) s)))
+        ((string= (car l) "*") (evaluate (cdr l) (cons (* (car s) (cadr s)) (cddr s))))
+        ((string= (car l) "+") (evaluate (cdr l) (cons (+ (car s) (cadr s)) (cddr s))))
+        ((string= (car l) "/") (evaluate (cdr l) (cons (/ (car s) (cadr s)) (cddr s))))
+        ((string= (car l) "-") (evaluate (cdr l) (cons (- (car s) (cadr s)) (cddr s))))
+    )
+)
+
+(defun main (l)
+    (evaluate (myreverse l) ())
+)
+
+(print (main '(+ * 2 4 - 5 * 2 2)))
+
+
+; d) Write a function to return T if a list has an even number of elements on the first level, and NIL on the 
+; contrary case, without counting the elements of the list.
+
+; evenelms(l1l2...ln) = { t, if n = 0
+;                       { NIL, if n = 1
+;                       { evenelms(l3...ln), otherwise
+
+(defun evenelms (l)
+    (cond
+        ((null l) t)
+        ((null (cdr l)) nil)
+        (t (evenelms (cddr l)))
+    )
+)
+
+(print (evenelms '(1 2 3 4 5 6)))

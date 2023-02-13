@@ -1,0 +1,83 @@
+; exercise 8
+
+; a) Write a function to return the difference of two sets.
+
+; mathematical model:
+; differenceset(l1l2...ln, p1p2...pm) = { nil, if n = m = 0
+;                                       { nil, if n = 0
+;                                       { l1l2...ln, if m = 0
+;                                       { {l1} U differenceset(l2...ln, p1p2...pm), if l1 not in p1p2...pm
+;                                       { differenceset(l2...ln, p1p2...pm), otherwise
+
+(defun differenceset (l p r)
+    (cond
+        ((and (null l) (null p)) r)
+        ((null l) r)
+        ((null p) (myappend l r))
+        ((checkifexists p (car l)) (differenceset (cdr l) p))
+        (t (differenceset (cdr l) p (myappend r (list (car l)))))
+    )
+)
+
+(print (differenceset '(1 2 3 4 5) '(3 4 5 6 7) (list)))
+
+
+; b) Write a function to reverse a list with its all sublists, on all levels.
+
+(defun myappend (l p)
+    (cond
+        ((null l) p)
+        (t (cons (car l) (myappend (cdr l) p)))
+    )
+)
+
+; mathematical model:
+; myreverse(l1l2...ln) = { nil, if n = 0
+;                        { myappend(myreverse(l2...ln), myreverse(l1)), if l1 is a list
+;                        { myappend(myreverse(l2...ln), list(l1)), otherwise
+
+(defun myreverse (l)
+    (cond
+        ((null l) nil)
+        ((listp (car l)) (myappend (myreverse (cdr l)) (list(myreverse (car l)))))
+        (t (myappend (myreverse (cdr l)) (list (car l))))
+    )
+)
+
+(print (myreverse '(1 2 3 (4 5 6 (10 11)) 7 8 9)))
+
+; c) Write a function to return the list of the first elements of all list elements of a given list with an odd 
+; number of elements at superficial level. Example: (1 2 (3 (4 5) (6 7)) 8 (9 10 11)) => (1 3 9).
+
+; mathematical model:
+; countel(l1l2...ln) = { 0, if n = 0
+;                      { 1 + countel(l2...ln), otherwise
+
+(defun countel (l)
+    (cond 
+        ((null l) 0)
+        (t (+ 1 (countel (cdr l))))
+    )
+)
+
+; mathematical model:
+; returnfirst(l1l2...ln) = { nil, if n = 0
+;                          { {l1}
+
+
+; d) Write a function to return the sum of all numerical atoms in a list at superficial level.
+
+; mathematical model;
+; sum(l1l2...ln) = { 0, if n = 0
+;                  { l1 + sum(l2...ln), if l1 is a number
+;                  { sum(l2...ln), otherwise
+
+(defun sum (l)
+    (cond
+        ((null l) 0)
+        ((numberp (car l)) (+ (car l) (sum (cdr l))))
+        (t (sum (cdr l)))
+    )
+)
+
+(print (sum '(a 2 3 4 (5 6) 1)))

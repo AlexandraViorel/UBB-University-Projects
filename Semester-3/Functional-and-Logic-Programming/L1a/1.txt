@@ -1,0 +1,101 @@
+; exercise 1 
+; a) Write a function to return the n-th element of a list, or NIL if such an element does not exist.
+
+; Mathematical model:
+; nthElement(l1l2...lm, n, c) = { NIL, if m = 0
+;                               { l1, if n = c
+;                               { nthElement(l2...lm, n, c+1), otherwise
+
+(defun nthElement (l n c)
+    (cond
+        ((null l) NIL)
+        ((= n c) (car l))
+        (t (nthElement (cdr l) n (+ c 1)))
+    )
+)
+
+;(print (nthElement '(1 2 3 4 5 6 7) 3 0))
+
+; b) Write a function to check whether an atom E is a member of a list which is not necessarily linear.
+
+; Mathematical model:
+; isMember(l1l2...ln, e) = { NIL, if n = 0
+;                          { T, if l1 is an atom and l1=e
+;                          { isMember(l1, e) U isMember(l2...ln, e), if l1 is a list
+;                          { isMember(l2...ln, e), otherwise
+
+(defun isMember (l e)
+    (cond
+        ((null l) NIL)
+        ((and (atom (car l)) (equal (car l) e)) t)
+        ((listp (car l)) (or (isMember (car l) e) (isMember (cdr l) e)))
+        (t (isMember (cdr l) e))
+    )
+)
+
+;(print (isMember '(1 2 3 (4 5)) 5))
+
+; c) Write a function to determine the list of all sublists of a given list, on any level. 
+ ; A sublist is either the list itself, or any element that is a list, at any level. 
+ ; Example: 
+ ; (1 2 (3 (4 5) (6 7)) 8 (9 10)) => 5 sublists :
+ ; ( (1 2 (3 (4 5) (6 7)) 8 (9 10)) (3 (4 5) (6 7)) (4 5) (6 7) (9 10) )
+ 
+ ; Mathematical model append:
+ ; append(l1l2...ln, p1p2...pm) = { p1p2...pm, if n = 0
+ ;                                { {l1} U append(l2...ln, p1p2...pm), otherwise
+ 
+ (defun appendd (l1 l2)
+    (cond
+        ((and (null l1) (listp l2)) l2)
+        ((and (null l1) (atom l2)) (list l2))
+        (t (cons (car l1) (appendd (cdr l1) l2)))
+    )
+ )
+ 
+ ;(print (appendd '(1 2 3) '(4 5 6)))
+ 
+ ; Mathematical model:
+ ; sublists(l1l2...ln) = { NIL, if n = 0 or l1 is an atom
+ ;                       { append(l1) U sublists(l2...ln), otherwise
+ 
+ (defun sublists (l)
+    (cond
+        ((null l) NIL)
+        ((atom (car l)) (sublists (cdr l)))
+        ((listp (car l)) (append (list (car l)) (append (sublists (car l)) (sublists (cdr l)))))
+    )
+ )
+
+(print (sublists '((1 2 (3 (4 5) (6 7)) 8 (9 10)))))
+
+; d) Write a function to transform a linear list into a set.
+
+; Mathematical model:
+; removeElement(l1l2...ln, e) = { NIL, if n = 0
+;                               { removeElement(l2...ln, e), if l1 = e
+;                               { {l1} U removeElement(l2...ln, e), otherwise
+
+
+(defun removeElement (l e)
+    (cond
+        ((null l) NIL)
+        ((equal (car l) e) (removeElement (cdr l) e))
+        (t (cons (car l) (removeElement (cdr l) e)))
+    )
+)
+
+
+
+; Mathematical model:
+; listToSet(l1l2...ln) = { NIL, if n = 0
+;                        { {l1} U listToSet(removeElement(l2...ln, l1)), otherwise
+
+(defun listToSet (l)
+    (cond 
+        ((null l) NIL)
+        (t (cons (car l) (listToSet (removeElement (cdr l) (car l)))))
+    )
+)
+
+;(print (listToSet '(1 2 3 4 1 2 3 4)))

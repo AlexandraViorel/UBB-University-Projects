@@ -1,0 +1,117 @@
+; exercise 15
+
+; a) Write a function to insert an element E on the n-th position of a linear list.
+
+; mathematical model:
+; insert(l1l2...lm, e, n, c) = { nil, if m = 0
+;                              { {e} U insert(l1l2...ln, e, n, c+1), if n = c
+;                              { {l1} U insert(l2...ln, e, n, c+1), otherwise
+
+(defun myinsert (l e n c)
+    (cond
+        ((null l) nil)
+        ((equal n c) (cons e (myinsert l e n (+ c 1))))
+        (t (cons (car l) (myinsert (cdr l) e n (+ c 1))))
+    )
+)
+
+(print (myinsert '(1 2 3 4 5 6 7) 9 5 1))
+
+
+; b) Write a function to return the sum of all numerical atoms of a list, at any level.
+
+; mathematical model:
+; sumnb(l1l2...ln) = { 0, if n = 0
+;                    { l1 + sumnb(l2...ln), if l1 is a number
+;                    { sumnb(l1) + sumnb(l2...ln), if l1 is a list
+;                    { sumnb(l2...ln), otherwise
+
+(defun sumnb (l)
+    (cond
+        ((null l) 0)
+        ((numberp (car l)) (+ (car l) (sumnb (cdr l))))
+        ((listp (car l)) (+ (sumnb (car l)) (sumnb (cdr l))))
+        (t (sumnb (cdr l)))
+    )
+)
+
+(print (sumnb '(1 2 a 4 (6 2 5) r 4)))
+
+
+; c) Write a function to return the set of all sublists of a given linear list. 
+; Ex. For list ((1 2 3) ((4 5) 6)) => ((1 2 3) (4 5) ((4 5) 6))
+
+; Mathematical model append:
+ ; append(l1l2...ln, p1p2...pm) = { p1p2...pm, if n = 0
+ ;                                { {l1} U append(l2...ln, p1p2...pm), otherwise
+ 
+ (defun appendd (l1 l2)
+    (cond
+        ((and (null l1) (listp l2)) l2)
+        ((and (null l1) (atom l2)) (list l2))
+        (t (cons (car l1) (appendd (cdr l1) l2)))
+    )
+ )
+ 
+ 
+ ; Mathematical model:
+ ; sublists(l1l2...ln) = { NIL, if n = 0 or l1 is an atom
+ ;                       { append(l1) U sublists(l2...ln), otherwise
+ 
+ (defun sublists (l)
+    (cond
+        ((null l) NIL)
+        ((atom (car l)) (sublists (cdr l)))
+        ((listp (car l)) (append (list (car l)) (append (sublists (car l)) (sublists (cdr l)))))
+    )
+ )
+
+(print (sublists '((1 2 3) ((4 5) 6))))
+
+
+; d) Write a function to test the equality of two sets, without using the difference of two sets.
+
+; mathematical model:
+; exists(l1l2...ln, e) = { nil, if n = 0
+;                        { t, if l1 = e
+;                        { exists(l2...ln, e), otherwise
+
+(defun exists (l e)
+    (cond
+        ((null l) nil)
+        ((equal (car l) e) t)
+        (t (exists (cdr l) e))
+    )
+)
+
+; mathematical model:
+; myremove(l1l2...ln, e) = { nil, if n = 0
+;                          { nil, if l1 = e and n = 1
+;                          { myremove(l2...ln, e), if l1 = e
+;                          { {l1} U myremove(l2...ln, e), otherwise
+
+(defun myremove (l e)
+    (cond
+        ((null l) nil)
+        ((and (equal (car l) e) (null (cdr l))) nil)
+        ((equal (car l) e) (myremove (cdr l) e))
+        (t (cons (car l) (myremove (cdr l) e)))
+    )
+)
+
+; mathematical model:
+; equality(l1l2...ln, p1p2...pm) = { t, if n = m = 0
+;                                  { nil, if n = 0 or m = 0
+;                                  { nil, if l1 not in p1p2...pm
+;                                  { equality(l2...ln, myremove(p1p2...pm, l1)), otherwise 
+
+(defun equality (l p)
+    (cond
+        ((and (null l) (null p)) t)
+        ((or (null l) (null p)) nil)
+        ((not (exists p (car l))) nil)
+        (t (equality (cdr l) (myremove p (car l))))
+    )
+)
+
+(print (equality '(1 2 3 4 5) '(5 2 4 1 3)))

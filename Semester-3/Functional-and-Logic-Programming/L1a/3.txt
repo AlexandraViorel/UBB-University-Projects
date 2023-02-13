@@ -1,0 +1,116 @@
+; exercise 3
+; a) Write a function that inserts in a linear list a given atom A after the 2nd, 4th, 6th, ... element.
+
+; Mathematical model:
+; insert(l1l2...ln, a, c) = { NIL, if n = 0
+;                           { {l1} U insert(l2...ln, a, c+1), if c % 2 = 1
+;                           { {l1} U {a} U insert(l2...ln, a, c+1), if c % 2 = 0
+
+(defun insert (l a c)
+    (cond
+        ((null l) NIL)
+        ((equal (mod c 2) 1) (cons (car l) (insert (cdr l) a (+ c 1))))
+        (t (cons (car l) (cons a (insert (cdr l) a (+ c 1)))))
+    )
+)
+
+;(print (insert '(1 2 3 4 5 6) 9 1))
+
+; b) Write a function to get from a given list the list of all atoms, on any level, but reverse order. Example: (((A B) C) (D E)) ==> (E D C B A)
+
+; Mathematical model:
+; getElems(l1l2...ln) = { NIL, if n = 0
+;                       { getElems(l2...ln) U getElems(l1), if l1 is a list
+;                       { getElems(l2...ln) U {l1}, otherwise
+
+(defun appendd (l1 l2)
+    (cond
+        ((and (null l1) (listp l2)) l2)
+        ((and (null l1) (atom l2)) (list l2))
+        (t (cons (car l1) (appendd (cdr l1) l2)))
+    )
+ )
+
+(defun getElems(l)
+    (cond
+        ((null l) NIL)
+        ((listp (car l)) (appendd (getElems (cdr l)) (getElems (car l))))
+        (t (appendd (getElems (cdr l)) (car l)))
+    )
+)
+
+;(print (getElems '(((A B) C) (D E))))
+
+
+; c) Write a function that returns the greatest common divisor of all numbers in a nonlinear list.
+
+; Mathematical model:
+; gcd(a b) = { a, if b is not a number
+;            { b, if a is not a number
+;            { a, if b = 0
+;            { gcd(b, a%b), otherwise
+
+(defun myGcd (a b)
+    (cond
+        ((not (numberp b)) a)
+        ((not (numberp a)) b)
+        ((= b 0) a)
+        (t (myGcd b (mod a b)))
+    )
+)
+
+(print (myGcd 12 6))
+
+; Mathematical model:
+; searchForNb(l1l2...ln) = { NIL, if n = 0
+;                          { T, if l1 is a number
+;                          { searchForNb(l1) U searchForNb(l2...ln), if l1 is a list
+;                          { searchForNb(l2...ln), otherwise
+
+(defun searchForNb (l)
+    (cond
+        ((null l) NIL)
+        ((numberp (car l)) T)
+        ((listp (car l)) (or (searchForNb (car l)) (searchForNb (cdr l))))
+        (t (searchForNb (cdr l)))
+    )
+)
+
+; Mathematical model:
+; gcdAllNb(l1l2...ln) = { l1, if n = 1 and l1 is a number
+;                       { myGcd(gcdAllNb(l1), gcdAllNb(l2...ln)), if l1 is a list
+;                       { myGcd(l1, gcdAllNb(l2...ln)), otherwise
+
+(defun gcdAllNb (l)
+    (cond
+        ((and (null (cdr l)) (numberp (car l))) (car l))
+        ((listp (car l)) (myGcd (gcdAllNb (car l)) (gcdAllNb (cdr l))))
+        (t (myGcd (car l) (gcdAllNb (cdr l))))
+    )
+)
+
+(defun main (l)
+    (cond
+        ((searchForNb l) (gcdAllNb l))
+        (t 1)
+    )
+)
+
+(print (main '(2 (4 6) 2 a 8)))
+
+; d) Write a function that determines the number of occurrences of a given atom in a nonlinear list.
+
+; Mathematical model:
+; nbOcc(l1l2...ln, e, c) = { c, if n = 0
+;                          { nbOcc(l2...ln, e, c+1), if l1 = e
+;                          { nbOcc(l2...ln, e, c), otherwise
+
+(defun nbOcc (l e c)
+    (cond
+        ((null l) c)
+        ((equal (car l) e) (nbOcc (cdr l) e (+ c 1)))
+        (t (nbOcc (cdr l) e c))
+    )
+)
+
+(print (nbOcc '(1 2 3 4 4 4 4) 4 0))

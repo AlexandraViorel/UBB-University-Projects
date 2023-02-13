@@ -1,0 +1,147 @@
+; exercise 9
+
+; a) Write a function that merges two sorted linear lists and keeps double values.
+
+; merge(l1l2...ln, p1p2...pm) = { nil, if n = m = 0
+;                               { p1p2...pm, if n = 0
+;                               { l1l2...ln, if m = 0
+;                               { {l1} U merge(l2...ln, p1p2...pm), if l1>=p1
+;                               { {p1} U merge(l1l2...ln, p2...pm), if l1<p1
+
+
+(defun mergelist (l1 l2)
+    (cond
+        ((and (null l1) (null l2)) nil)
+        ((null l1) l2)
+        ((null l2) l1)
+        ((>= (car l1) (car l2)) (cons (car l2) (mergelist l1 (cdr l2))))
+        (t (cons (car l1) (mergelist (cdr l1) l2)))
+    )
+)
+
+(print (mergelist '(1 2 3 4) '(2 3 4 5 6)))
+
+; b) Write a function to replace an element E by all elements of a list L1 at all levels of a given list L.
+
+; mathematical model;
+; myreplace(l1l2...ln, e, L1) = { nil, if n = 0
+;                               { {L1} U myreplace(l2...ln, e, L1), if l1 = e
+;                               { myreplace(l1, e, L1) U myreplace(l2...ln, e L1), if l1 is a list
+;                               { {l1} U myreplace(l2...ln, e, L1), otherwise
+
+(defun myreplace (l e l1)
+    (cond
+        ((null l) nil)
+        ((equal (car l) e) (cons l1 (myreplace (cdr l) e l1)))
+        ((listp (car l)) (cons (myreplace (car l) e l1) (myreplace (cdr l) e l1)))
+        (t (cons (car l) (myreplace (cdr l) e l1)))
+    )
+)
+
+(print (myreplace '(1 2 3 (1 3 1) 1) 1 '(a b)))
+
+
+; c) Write a function to determines the sum of two numbers in list representation, and returns the 
+; corresponding decimal number, without transforming the representation of the number from list to 
+; number.
+
+; mathematical model:
+; carry(a, b, c) = { 0, if a + b + c <=9
+;                  { 1, otherwise
+
+(defun carry (a b c)
+    (cond 
+        ((<= (+ (+ a b) c) 9) 0)
+        (t 1)
+    )
+)
+
+; mathematical model:
+; digit(a, b, c) = { (a + b + c) mod 10, if a + b + c > 9
+;                  { a + b + c, otherwise
+
+(defun digit (a b c) 
+    (cond
+        ((> (+ (+ a b) c) 9) (mod (+ (+ a b) c) 10))
+        (t (+ (+ a b) c))
+    )
+)
+
+; mathematical model:
+; myappend(l1l2...ln, p1p2...pm) = { p1p2...pm, if n = 0
+;                                  { {l1} U myappend(l2...ln, p1p2...pn), otherwise
+
+(defun myappend (l p)
+    (cond
+        ((null l) p)
+        (t (cons (car l) (myappend (cdr l) p)))
+    )
+)
+
+; mathematical model:
+; myreverse(l1l2...ln) = { nil, if n = 0
+;                        { myappend(myreverse(l2...ln), list(myreverse(l1))), if l1 is a list
+;                        { myappend(myreverse(l2...ln), list(l1)), otherwise
+
+
+(defun myreverse (l)
+    (cond
+        ((null l) nil)
+        ((listp (car l)) (myappend (myreverse (cdr l)) (list (myreverse (car l)))))
+        (t (myappend (myreverse (cdr l)) (list (car l))))
+    )
+)
+
+; mathematical model:
+; myadd(l1l2...ln, p1p2...pm, c, r) = { nil, if n = 0 and m = 0 and c = 0
+;                                     { 1, if n = 0 and m = 0 and c = 1
+;                                     { myadd(l2...ln, nil, carry(l1, 0, c), {digit(l1, 0, c)} U r), if m = 0
+;                                     { myadd(nil, p2...pm, carry(0, p1, c), {digit(0, p1, c)} U r), if n = 0
+;                                     { myadd(l2...ln, p2...pm, carry(l1, p1, c), {digit(l1, p1, c)} U r), otherwise
+
+(defun myadd (l p c r)
+    (cond
+        ((and (and (null l) (null p)) (equal c 1)) (cons c r))
+        ((and (and (null l) (null p)) (equal c 0)) r)
+        ((null p) (myadd (cdr l) nil (carry (car l) 0 c) (cons (digit (car l) 0 c) r)))
+        ((null l) (myadd nil (cdr p) (carry 0 (car p) c) (cons (digit 0 (car p) c) r)))
+        (t (myadd (cdr l) (cdr p) (carry (car l) (car p) c) (cons (digit (car l) (car p) c) r)))
+    )
+)
+
+(defun sumnb (l p)
+    (myadd (myreverse l) (myreverse p) 0 ())
+)
+
+(print (sumnb '(1 2 3 4) '(2 4 1 6)))
+
+
+; d) Write a function to return the greatest common divisor of all numbers in a linear list.
+
+; Mathematical model:
+; gcd(a b) = { a, if b is not a number
+;            { b, if a is not a number
+;            { a, if b = 0
+;            { gcd(b, a%b), otherwise
+
+(defun myGcd (a b)
+    (cond
+        ((not (numberp b)) a)
+        ((not (numberp a)) b)
+        ((= b 0) a)
+        (t (myGcd b (mod a b)))
+    )
+)
+
+; Mathematical model:
+; gcdAllNb(l1l2...ln) = { l1, if n = 1 and l1 is a number
+;                       { myGcd(l1, gcdAllNb(l2...ln)), otherwise
+
+(defun gcdAllNb (l)
+    (cond
+        ((and (null (cdr l)) (numberp (car l))) (car l))
+        (t (myGcd (car l) (gcdAllNb (cdr l))))
+    )
+)
+
+(print (gcdAllNb '(12 24 18 6)))

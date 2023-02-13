@@ -1,0 +1,134 @@
+; exercise 14
+
+; a) Write a function to return the union of two sets.
+
+; mathematical model:
+; myremove(l1l2...ln, e) = { nil, if n = 0
+;                          { nil, if l1 = e and n = 1
+;                          { myremove(l2...ln, e), if l1 = e
+;                          { {l1} U myremove(l2...ln, e), otherwise
+
+(defun myremove (l e)
+    (cond
+        ((null l) nil)
+        ((and (equal (car l) e) (null (cdr l))) nil)
+        ((equal (car l) e) (myremove (cdr l) e))
+        (t (cons (car l) (myremove (cdr l) e)))
+    )
+)
+
+; mathematical model:
+; union(l1l2...ln, s1s2...sm) = { nil, if n = m = 0
+;                               { s1s2...sm, if n = 0
+;                               { l1l2...ln, if m = 0
+;                               { {l1} U union(l2...ln, myremove(s1s2...sm, l1)), otherwise
+
+
+(defun unionsets (l s)
+    (cond
+        ((and (null l) (null s)) nil)
+        ((null l) s)
+        ((null s) l)
+        (t (cons (car l) (unionsets (cdr l) (myremove s (car l)))))
+    )
+)
+
+(print (unionsets '(1 2 3 4) '(3 4 5 6 7)))
+
+
+; b) Write a function to return the product of all numerical atoms in a list, at any level.
+
+; mathematical model:
+; myproduct(l1l2...ln) = { 1, if n = 0
+;                        { l1 * myproduct(l2...ln), if l1 is a number
+;                        { myproduct(l2...ln), otherwise
+
+(defun myproduct (l)
+    (cond
+        ((null l) 1)
+        ((numberp (car l)) (* (car l) (myproduct (cdr l))))
+        (t (myproduct (cdr l)))
+    )
+)
+
+(print (myproduct '(2 3 a (2 3 4) 6)))
+
+
+; c) Write a function to sort a linear list with keeping the double values.
+
+; mathematical model:
+; goodinsert(l1l2...ln, e) = { {e}, if n = 0
+;                            { {e} U l1l2...ln, if e < l1
+;                            { {l1} U goodinsert(l2...ln, e), otherwise
+
+
+(defun goodinsert (l e)
+    (cond
+        ((null l) (list e))
+        ((< e (car l)) (cons e l))
+        (t (cons (car l) (goodinsert (cdr l) e)))
+    )
+)
+
+; mathematical model:
+; mysort(l1l2...ln) = { nil, if n = 0
+;                     { mysort(goodinsert(l2...ln, l1)), otherwise
+
+(defun mysort (l)
+    (cond
+        ((null l) NIL)
+        (t (goodinsert (mysort (cdr l)) (car l)))
+    )
+)
+
+(print (mysort '(5 2 6 8 2 7 2 5)))
+
+
+; d) Build a list which contains positions of a minimum numeric element from a given linear list.
+
+; mathematical model:
+; mymin(a, b) = { a, if b is not a number
+;               { b, if a is not a number
+;               { a, if a <= b
+;               { b, otherwise
+
+(defun mymin (a b)
+    (cond
+        ((not (numberp b)) a)
+        ((not (numberp a)) b)
+        ((<= a b) a)
+        (t b)
+    )
+)
+
+; mathematical model:
+; minlist(l1l2...ln) = { nil, if n = 0
+;                      { mymin(l1, minlist(l2...ln)), if l1 is an atom
+;                      { mymin(minlist(l1), minlist(l2...ln)), otherwise
+
+(defun minlist (l)
+    (cond
+        ((null l) nil)
+        ((atom (car l)) (mymin (car l) (minlist (cdr l))))
+        (t (mymin (minlist (car l)) (minlist (cdr l))))
+    )
+)
+
+; mathematical model:
+; conslist(l1l2...ln, e, k) = { nil, if n = 0
+;                             { {k} U conslist(l2...ln, e, k+1), if l1 = e
+;                             { conslist(l2...ln, e, k+1), otherwise
+
+(defun conslist (l e k)
+    (cond
+        ((null l) nil)
+        ((equal (car l) e) (cons k (conslist (cdr l) e (+ k 1))))
+        (t (conslist (cdr l) e (+ k 1)))
+    )
+)
+
+(defun main (l)
+    (conslist l (minlist l) 1)
+)
+
+(print (main '(2 5 1 5 6 2 1)))

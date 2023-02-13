@@ -1,0 +1,188 @@
+; exercise 11
+
+; a) Determine the least common multiple of the numerical values of a nonlinear list.
+
+; Mathematical model:
+; gcd(a b) = { a, if b is not a number
+;            { b, if a is not a number
+;            { a, if b = 0
+;            { gcd(b, a%b), otherwise
+
+(defun myGcd (a b)
+    (cond
+        ((not (numberp b)) a)
+        ((not (numberp a)) b)
+        ((= b 0) a)
+        (t (myGcd b (mod a b)))
+    )
+)
+
+; mathematical model:
+; mylcm(a, b) = { a, if b is not a number
+;               { b, if a is not a number
+;               { a * b / mygcd(a, b), otherwise
+
+(defun mylcm (a b)
+    (cond
+        ((not (numberp b)) a)
+        ((not (numberp a)) b)
+        (t (/ (* a b) (myGcd a b)))
+    )
+)
+
+; Mathematical model:
+; searchForNb(l1l2...ln) = { NIL, if n = 0
+;                          { T, if l1 is a number
+;                          { searchForNb(l1) U searchForNb(l2...ln), if l1 is a list
+;                          { searchForNb(l2...ln), otherwise
+
+(defun searchForNb (l)
+    (cond
+        ((null l) NIL)
+        ((numberp (car l)) T)
+        ((listp (car l)) (or (searchForNb (car l)) (searchForNb (cdr l))))
+        (t (searchForNb (cdr l)))
+    )
+)
+
+; mathematical model:
+; lcmAllNb(l1l2...ln) = { l1, if n = 1 and l1 is a number
+;                       { mylcm(lcmAllNb(l1), lcmAllNb(l2...ln)), if l1 is a list
+;                       { mylcm(l1, lcmAllNb(l2...ln)), otherwise
+
+(defun lcmAllNb (l)
+    (cond
+        ((and (null (cdr l)) (numberp (car l))) (car l))
+        ((listp (car l)) (mylcm (lcmAllNb (car l)) (lcmAllNb (cdr l))))
+        (t (mylcm (car l) (lcmAllNb (cdr l))))
+    )
+)
+
+(defun main (l)
+    (cond
+        ((searchForNb l) (lcmAllNb l))
+        (t 1)
+    )
+)
+
+(print (main '(2 (4 6) 2 a 8)))
+
+; b) Write a function to test if a linear list of numbers has a "mountain" aspect (a list has a "mountain" 
+; aspect if the items increase to a certain point and then decreases. 
+; Eg. (10 18 29 17 11 10). The list must have at least 3 atoms to fullfil this criteria.
+
+; f = 0 for an increasing sequence
+; f = 1 for a decreasing sequence
+; mathematical model:
+; mountain(l1l2...ln, f) = { t, if n <= 1 and f = 1
+;                          { mountain(l2...ln, 0), if l1<=l2 and f = 0
+;                          { mountain(l2...ln, 1), if l1 >= l2 and f = 0
+;                          { mountain(l2...ln, 1), if l1 >= l2 and f = 1
+;                          { nil, otherwise
+
+(defun mountain (l f)
+    (cond
+        ((and (null (cdr l)) (= f 1)) t)
+        ((and (<= (car l) (cadr l)) (= f 0)) (mountain (cdr l) 0))
+        ((and (>= (car l) (cadr l)) (= f 0)) (mountain (cdr l) 1))
+        ((and (>= (car l) (cadr l)) (= f 1)) (mountain (cdr l) 1))
+        (t nil)
+    )
+)
+
+(defun mainmountain (l)
+    (cond 
+        ((null l) nil)
+        ((null (cadr l)) nil)
+        ((null (caddr l)) nil)
+        (t (mountain l 0))
+    )
+)
+
+(print (mainmountain '(10 18 29 17 11 10)))
+(print (mainmountain '(1 2)))
+
+
+; c) Remove all occurrences of a maximum numerical element from a nonlinear list.
+
+; mathematical model:
+; mymax(a, b) = { a, if b is not a number
+;               { b, if a is not a number
+;               { a, if a >= b
+;               { b, otherwise
+
+(defun mymax (a b)
+    (cond
+        ((not (numberp b)) a)
+        ((not (numberp a)) b)
+        ((>= a b) a)
+        (t b)
+    )
+)
+
+; mathematical model:
+; maxlist(l1l2...ln) = { nil, if n = 0
+;                      { mymax(l1, maxlist(l2...ln)), if l1 is an atom
+;                      { mymax(maxlist(l1), maxlist(l2...ln)), otherwise
+
+(defun maxlist (l)
+    (cond
+        ((null l) nil)
+        ((atom (car l)) (mymax (car l) (maxlist (cdr l))))
+        (t (mymax (maxlist (car l)) (maxlist (cdr l))))
+    )
+)
+
+; mathematical model:
+; myremove(l1l2...ln, e) = { nil, if n = 0
+;                          { nil, if l1 = e and n = 1
+;                          { myremove(l2...ln, e), if l1 = e
+;                          { myremove(l1, e) U myremove(l2...ln, e), if l1 is a list
+;                          { {l1} U myremove(l2...ln, e), otherwise
+
+(defun myremove (l e)
+    (cond
+        ((null l) nil)
+        ((and (equal (car l) e) (null (cdr l))) nil)
+        ((equal (car l) e) (myremove (cdr l) e))
+        ((listp (car l)) (cons (myremove (car l) e) (myremove (cdr l) e)))
+        (t (cons (car l) (myremove (cdr l) e)))
+    )
+)
+
+(defun removemax (l)
+    (myremove l (maxlist l))
+)
+
+(print (removemax '(3 5 1 6 a (5 1 B 5 6) 6)))
+
+
+; d) Write a function which returns the product of numerical even atoms from a list, to any level.
+
+; mathematical model:
+; iseven(a) = { t, if a mod 2 = 0
+;             { nil, otherwise
+
+(defun iseven (a)
+    (cond
+        ((= (mod a 2) 0) t)
+        (t nil)
+    )
+)
+
+; mathematical model:
+; producteven(l1l2...ln) = { 1, if n = 0
+;                          { l1 * producteven(l2...ln), if l1 is a number and iseven(l1)
+;                          { producteven(l1) * producteven(l2...ln), if l1 is a list
+;                          { producteven(l2...ln), otherwise
+
+(defun producteven (l)
+    (cond
+        ((null l) 1)
+        ((and (numberp (car l)) (iseven (car l))) (* (car l) (producteven (cdr l))))
+        ((listp (car l)) (* (producteven (car l)) (producteven (cdr l))))
+        (t (producteven (cdr l)))
+    )
+)
+
+(print (producteven '(1 2 a 4 (6 2 5) r 4)))
