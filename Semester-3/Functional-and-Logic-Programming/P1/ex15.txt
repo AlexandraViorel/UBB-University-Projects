@@ -1,0 +1,70 @@
+% ex 15 - a
+
+% removeOccurences(L - list, E - number, R - result list)
+% flow model (i, i, o)
+
+removeOccurences([], _, []).
+
+removeOccurences([H|T], E, [H|R]):-
+    H =\= E,
+    removeOccurences(T, E, R).
+
+removeOccurences([H|T], E, R):-
+    H =:= E,
+    removeOccurences(T, E, R).
+
+% set(L - list, R - result list)
+% flow model (i o)
+
+set([], []):-!.
+set([H|T], [H|R]):-
+    removeOccurences(T, H, RR),
+    set(RR, R),
+    !.
+
+% ex 15 - b
+
+% evenList(L - list, R - result list)
+% flow model (i o)
+
+evenList([], []):-!.
+evenList([H|T], [H|R]):-
+    H mod 2 =:= 0,
+    !,
+    evenList(T, R).
+evenList([_|T], R):-
+    evenList(T, R).
+
+% oddList(L - list, R - result list)
+% flow model (i o)
+
+oddList([], []):-!.
+oddList([H|T], [H|R]):-
+    H mod 2 =\= 0,
+    !,
+    oddList(T, R).
+oddList([_|T], R):-
+    oddList(T, R).
+
+% myLength(L - list, R - result)
+% flow model (i o)
+
+myLength([], 0).
+myLength([_|T], R):-
+    myLength(T, R1),
+    R is R1 + 1.
+
+% concatenate(L1 - list, L2 - lis, R - result list) 
+% flow model (i i o)
+
+concatenate(L1, L2, [L1,L2]):-!.
+
+% main(L - list, R - result, RE - number, RO - number)
+% flow model (i o o o)
+
+main(L, R, RE, RO):-
+    evenList(L, LE),
+    oddList(L, LO),
+    myLength(LE, RE),
+    myLength(LO, RO),
+    concatenate(LE, LO, R).

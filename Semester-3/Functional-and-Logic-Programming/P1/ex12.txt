@@ -1,0 +1,31 @@
+% ex 12 - a
+
+% insert(L1 - list, L2 - list, R - result list)
+% flow model (i i o)
+
+insert([], L, L).
+insert([H|T], L, [H|R]):-
+    insert(T, L, R).
+
+% substitute(L1 - list, E - number, L2 - list, R - result)
+% flow model(i i i o)
+
+substitute([], _, _, []).
+substitute([H|T], E, L, R):-
+    H =:= E,
+    insert(L, T, RI),
+    substitute(RI, E, L, R).
+substitute([H|T], E, L, [H|R]):-
+    H =\= E,
+    substitute(T, E, L, R).
+
+% ex 12 - b
+
+% removeNElement(L - list, N - number, R - result list)
+% flow model (i i o)
+
+removeNElement([], _, []).
+removeNElement([_|T], 1, T).
+removeNElement([H|T], K, [H|R]):-
+    K1 is K - 1,
+    removeNElement(T, K1, R).

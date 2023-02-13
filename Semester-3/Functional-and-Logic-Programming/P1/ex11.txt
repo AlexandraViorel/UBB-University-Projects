@@ -1,0 +1,32 @@
+% ex 11 - a
+
+% substitute(L - list, E1 - number, E2 - number, R - result list)
+% flow model (i i i o)
+
+substitute([], _, _, []).
+substitute([H|T], E1, E2, [H|R]):-
+    H =\= E1,
+    substitute(T, E1, E2, R).
+substitute([H|T], E1, E2, [E2|R]):-
+    H =:= E1,
+    substitute(T, E1, E2, R).
+
+% ex 11 - b
+
+% sublist(L - list, M - number, N - number, P - number, R - result list)
+% flow model(i i i i o)
+
+sublist(_, _, N, P, []):-
+    P > N,
+    !.
+
+sublist([H|T], M, N, P, [H|R]):-
+    M =< P,
+    P =< N,
+    P1 is P + 1,
+    sublist(T, M, N, P1, R),
+    !.
+
+sublist([_|T], M, N, P, R):-
+    P1 is P + 1,
+    sublist(T, M, N, P1, R).

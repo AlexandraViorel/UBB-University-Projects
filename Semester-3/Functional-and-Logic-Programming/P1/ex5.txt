@@ -1,0 +1,41 @@
+% ex 5 - a
+
+% removeOccurences(L - list, E - number, R - result list)
+% flow model (i, i, o)
+
+removeOccurences([], _, []).
+
+removeOccurences([H|T], E, [H|R]):-
+    H =\= E,
+    removeOccurences(T, E, R).
+
+removeOccurences([H|T], E, R):-
+    H =:= E,
+    removeOccurences(T, E, R).
+
+% union(L1 - list, L2 - list, R - result list)
+% flow model (i, i, o)
+
+union([], [], []).
+union([H|T], B, [H|R]):-
+    removeOccurences([H|T], H, R1),
+    removeOccurences(B, H, R2),
+    union(R1, R2, R).
+union([], B, R):-
+    union(B, [], R).
+
+% ex 5 - b
+
+% generateSets(L - list, K - number, R - result list)
+% flow model (i i o)
+
+generateSets(_, 0, []):-
+    !.
+generateSets([H|T], K, [H|R]):-
+    K1 is K - 1,
+    generateSets(T, K1, R).
+generateSets([_|T], K, R):-
+    generateSets(T, K, R).
+
+generateAllSets(L, R):-
+    findall(R1, generateSets(L, 2, R1), R).

@@ -1,0 +1,41 @@
+% ex 8 - a
+
+% evenList(L - list)
+% flow model (i)
+
+evenList([]).
+evenList([_,_|T]):-
+    evenList(T).
+
+% ex 8 - b
+
+% minimumNb(A - number, B - number, R - result number)
+% flow model (i i o)
+
+minimumNb(A, B, A):-
+    A < B.
+minimumNb(A, B, B):-
+    A >= B.
+
+% minimumList(L - list, R - result number)
+% flow model (i o)
+
+minimumList([H], H).
+minimumList([H|T], R):-
+    minimumList(T, R1),
+    minimumNb(H, R1, R).
+
+% deleteFirstOccurence(L - list, E - element, R - result)
+% flow model (i i o)
+
+deleteFirstOccurence([H|T], H, T):-
+    !.
+deleteFirstOccurence([H|T], E, [H|R]):-
+    deleteFirstOccurence(T, E, R).
+
+% deleteFirstMin(L - list, R - result list)
+% flow model (i o)
+
+deleteFirstMin(L, R):-
+    minimumList(L, RM),
+    deleteFirstOccurence(L, RM, R).

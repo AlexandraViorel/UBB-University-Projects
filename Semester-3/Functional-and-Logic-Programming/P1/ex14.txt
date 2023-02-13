@@ -1,0 +1,40 @@
+% ex 14 - a
+
+% setLength(L - list, R - result)
+% flow model (i o)
+
+setLength([], 0).
+setLength([_|T], R):-
+    setLength(T, R1),
+    R is R1 + 1.
+
+% contains(L - list, E - number)
+% flow model (i i)
+
+contains([H|_], H):-!.
+contains([_|T], E):-
+    contains(T, E).
+
+% setEqualEl(L1 - list, L2 - list)
+% flow model (i i)
+
+setEqualEl([], _):-!.
+setEqualEl([H|T], B):-
+    contains(B, H),
+    setEqualEl(T, B).
+
+mainSetEq(L1, L2):-
+    setLength(L1, R1),
+    setLength(L2, R2),
+    R1 =:= R2,
+    setEqualEl(L1, L2).
+
+% ex 14 - b
+
+% select(L - list, N - number, R - result number)
+% flow model (i i o)
+
+select([H|_], 1, H):-!.
+select([_|T], N, R):-
+    N1 is N - 1,
+    select(T, N1, R).

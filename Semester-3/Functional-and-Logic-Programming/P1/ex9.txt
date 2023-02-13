@@ -1,0 +1,36 @@
+% ex 9 - a
+
+% insertOnPos(L - list, E - number, P - number, R - result list)
+% flow model (i i i o)
+
+insertOnPos(L, E, 0, [E|L]):-
+    !.
+insertOnPos([H|T], E, P, [H|R]):-
+    P1 is P - 1,
+    insertOnPos(T, E, P1, R).
+
+% ex 9 - b
+
+% gcd(A - number, B - number, R - result number)
+% flow model (i i o)
+
+gcd(A, 0, A):-!.
+gcd(0, B, B):-!.
+gcd(A, B, R):-
+    A >= B,
+    A1 is A mod B,
+    gcd(A1, B, R),
+    !.
+gcd(A, B, R):-
+    A < B,
+    B1 is B mod A,
+    gcd(A, B1, R),
+    !.
+
+% gcdList(L - list, R - result number)
+% flow model (i, o)
+
+gcdList([H], H).
+gcdList([H|T], R):-
+    gcdList(T, R1),
+    gcd(H, R1, R).

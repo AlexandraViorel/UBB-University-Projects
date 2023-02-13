@@ -1,0 +1,71 @@
+% ex 3 - a
+% removeOccurences(L - list, E - element to remove, R - result list)
+% flow model (i, i, o)
+
+removeOccurences([], _, []).
+
+removeOccurences([H|T], E, [H|R]):-
+    H =\= E,
+    removeOccurences(T, E, R).
+
+removeOccurences([H|T], E, R):-
+    H =:= E,
+    removeOccurences(T, E, R).
+
+% countOccurences(L - list, E - element, R - result)
+% flow model (i, i, o)
+
+countOccurences([], _, 0).
+
+countOccurences([H|T], E, R):-
+    H =:= E,
+    countOccurences(T, E, R1),
+    R is R1 + 1.
+
+countOccurences([H|T], E, R):-
+    H =\= E, 
+    countOccurences(T, E, R).
+
+% removeRepetitive(L - list, R - result list)
+% flow model (i, o)
+
+removeRepetitive([], []).
+
+removeRepetitive([H|T], [H|R]):-
+    countOccurences([H|T], H, RC),
+    RC =:= 1,
+    removeRepetitive(T, R).
+
+removeRepetitive([H|T], R):-
+    countOccurences([H|T], H, RC),
+    RC > 1,
+    removeOccurences([H|T], H, RR),
+    removeRepetitive(RR, R).
+
+
+% ex 3 - b
+
+% maximNumber(A - number, B - number, R - result)
+% flow model (i i o)
+
+maximNumber(A, B, A):-
+    A >= B.
+
+maximNumber(A, B, B):-
+    A < B.
+
+% maximList(L - list, R - result number)
+% flow model (i o)
+
+maximList([H], H).
+
+maximList([H|T], R):-
+    maximList(T, RM),
+    maximNumber(H, RM, R).
+
+% removeMaxim(L - list, R - result list)
+% flow model (i, o)
+
+removeMaxim(L, R):-
+    maximList(L, RM),
+    removeOccurences(L, RM, R).

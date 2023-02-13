@@ -1,0 +1,32 @@
+% ex 7 - a
+
+% containsElement(L - list, E - element)
+% flow model (i i)
+
+containsElement([H|_], E):-
+    H =:= E,
+    !.
+
+containsElement([H|T], E):-
+    H =\= E,
+    containsElement(T, E).
+
+% intersection(L1 - list, L2 - list, R - result list)
+% flow model (i i o)
+
+intersection([], _, []).
+intersection([H|T], B, [H|R]):-
+    containsElement(B, H),
+    intersection(T, B, R).
+intersection([_|T], B, R):-
+    intersection(T, B, R).
+
+% ex 7 - b
+
+% createList(M - number, N - number, R - result list)
+% flow model (i, i, o)
+
+createList(N, N, [N]).
+createList(M, N, [M|R]):-
+	M1 is M + 1,
+    createList(M1, N, R).

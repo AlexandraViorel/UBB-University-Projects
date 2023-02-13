@@ -1,0 +1,41 @@
+% ex 4 - a
+
+% containsElement(L - list, E - element)
+% flow model (i i)
+
+containsElement([H|_], E):-
+    H =:= E,
+    !.
+
+containsElement([H|T], E):-
+    H =\= E,
+    containsElement(T, E).
+    
+% difference(L1 - list, L2 - list, R - result list)
+% flow model (i i o)
+
+difference([], _, []).
+
+difference([H|T], L, R):-
+    containsElement(L, H),
+    difference(T, L, R),
+    !.
+
+difference([H|T], L, [H|R]):-
+    difference(T, L, R).
+
+% ex 4 - b
+
+% insert1(L - list, R - result list)
+% flow model (i o)
+
+insert1([], []).
+
+insert1([H|T], [H, 1|R]):-
+    H mod 2 =:= 0,
+    insert1(T, R).
+
+insert1([H|T], [H|R]):-
+    H mod 2 =\= 0,
+    insert1(T, R).
+    

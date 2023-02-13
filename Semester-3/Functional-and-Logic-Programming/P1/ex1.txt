@@ -1,0 +1,52 @@
+% ex 1 - a
+
+% gcd(A - number, B - number, R - result number)
+% flow model (i i o)
+
+gcd(A, 0, A):-!.
+gcd(0, B, B):-!.
+gcd(A, B, R):-
+    A >= B,
+    A1 is A mod B,
+    gcd(A1, B, R),
+    !.
+gcd(A, B, R):-
+    A < B,
+    B1 is B mod A,
+    gcd(A, B1, R),
+    !.
+
+% lcm(A - number, B - number, R - result number)
+% flow model (i i o)
+
+lcm(A, B, R):-
+    gcd(A, B, RG),
+    R is A * B / RG.
+
+% lcmList(L - list, R - result)
+lcmList([H], H).
+lcmList([H|T], R):-
+	lcmList(T, R1),
+	lcm(H, R1, R).
+
+% ex 1 - b
+
+%insertOnPow2(L - list, E - number, P - number, I - number, R - result list)
+% flow model (i i i i o)
+
+insertOnPow2([], _, _, _, []).
+insertOnPow2([H|T], E, P, I, [H, E|R]):-
+    P =:= I,
+    P1 is P * 2,
+    I1 is I + 1,
+    insertOnPow2(T, E, P1, I1, R).
+insertOnPow2([H|T], E, P, I, [H|R]):-
+    P =\= I,
+    I1 is I + 1,
+    insertOnPow2(T, E, P, I1, R).
+
+% insert(L - list, E - number, R - result list)
+% flow model (i i o)
+
+insert(L, E, R):-
+    insertOnPow2(L, E, 1, 1, R).

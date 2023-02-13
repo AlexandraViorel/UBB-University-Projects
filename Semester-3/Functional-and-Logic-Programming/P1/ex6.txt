@@ -1,0 +1,50 @@
+% ex 6 - a
+
+% countOccurences(L - list, E - element, R - result)
+% flow model (i, i, o)
+
+countOccurences([], _, 0).
+
+countOccurences([H|T], E, R):-
+    H =:= E,
+    countOccurences(T, E, R1),
+    R is R1 + 1.
+
+countOccurences([H|T], E, R):-
+    H =\= E, 
+    countOccurences(T, E, R).
+
+% testSet(L - list)
+% flow model (i)
+
+testSet([]).
+testSet([H|T]):-
+    countOccurences([H|T], H, RC),
+    RC =:= 1,
+    testSet(T).
+
+% ex 6 - b
+
+% removeNOccurences(L - list, E - number, N - number, R - result list)
+% flow model (i, i, i, o)
+
+removeNOccurences([], _, _, []).
+removeNOccurences(L, _, 0, L).
+removeNOccurences([H|T], E, N, [H|R]):-
+    H =\= E,
+    removeNOccurences(T, E, N, R).
+removeNOccurences([H|T], E, N, R):-
+    H =:= E,
+    N1 is N - 1,
+    removeNOccurences(T, E, N1, R).
+
+% remove3Occurences(L- list, E - element, R - result list)
+% flow model (i, i, o)
+
+remove3Occurences(L, E, R):-
+    removeNOccurences(L, E, 3, R).
+    
+    
+    
+    
+    

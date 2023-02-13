@@ -1,0 +1,39 @@
+% ex 2 - a
+% removeOccurences(L - list, E - element to remove, R - result list)
+% flow model (i, i, o)
+
+removeOccurences([], _, []).
+
+removeOccurences([H|T], E, [H|R]):-
+    H =\= E,
+    removeOccurences(T, E, R).
+
+removeOccurences([H|T], E, R):-
+    H =:= E,
+    removeOccurences(T, E, R).
+
+% ex 2 - b
+
+% countOccurences(L - list, E - element, R - result)
+% flow model (i, i, o)
+
+countOccurences([], _, 0).
+
+countOccurences([H|T], E, R):-
+    H =:= E,
+    countOccurences(T, E, R1),
+    R is R1 + 1.
+
+countOccurences([H|T], E, R):-
+    H =\= E, 
+    countOccurences(T, E, R).
+
+% numberAtom(L - list, R - result list)
+% flow model (i, o)
+
+numberAtom([], []).
+
+numberAtom([H|T], [[H, RC]|R]):-
+    countOccurences([H|T], H, RC),
+    removeOccurences(T, H, RR),
+    numberAtom(RR, R).

@@ -1,0 +1,26 @@
+% ex 10 - a
+
+% valley(L - list, F - number)
+% flow model (i i)
+
+valley([_], 0).
+valley([H1,H2|T], _):-
+    H1 < H2,
+    valley([H2|T], 0),
+    !.
+valley([H1,H2|T], 1):-
+    H1 > H2,
+    valley([H2|T], 1),
+    !.
+
+
+% ex 10 - b
+
+% alternativeSum(L - list, R - result number)
+% flow model (i o)
+
+alternativeSum([], 0).
+alternativeSum([H], H).
+alternativeSum([H1,H2|T], R):-
+    alternativeSum(T, R1),
+    R is H1 - H2 + R1.
