@@ -1,0 +1,27 @@
+#We receive strings. For strings that are usernames we print full name and homedir. For numbers we calculate their sum.
+
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+        echo "Invalid number of parameters! "
+        exit 1
+fi
+
+re='^[a-z]{4}[0-9]{4}$'
+re1='^[0-9]+$'
+sum=0
+
+for arg in $@
+do
+        x=$arg
+        if [[ $x =~ $re ]]; then
+                data=$(cat '/etc/passwd' | grep -E "^${x}" | awk -F ":" '{print $5, $6}')
+                echo $data
+        elif [[ $x =~ $re1 ]]; then
+                sum=$((sum+x))
+        else
+                echo "Invalid parameter!"
+        fi
+done
+
+echo "The sum is: $sum"

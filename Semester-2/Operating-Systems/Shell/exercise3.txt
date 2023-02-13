@@ -1,0 +1,36 @@
+#We receive a username and dirs. Prints the full name of the user and the number of hidden files in each dir.
+
+#!/bin/bash
+
+if [ $# -lt 2 ]
+then
+        echo "Invalid number of parameters!"
+        exit 1
+fi
+
+re='^[a-z]{4}[0-9]{4}$'
+user=$1
+if [[ ! $user =~ $re ]]; then
+        echo "Invalid user!"
+        exit 1
+fi
+
+shift 1
+
+for dir in $@
+do
+        if [[ ! -d $dir ]]; then
+                echo "Invalid directory!"
+                exit 1
+        fi
+done
+
+data=`cat /etc/passwd | grep -E "^${user}"`
+name=`echo "$data" | awk -F ":" '{print $5}'`
+echo $name
+
+for dir in $@
+do
+        k=`ls -la "$dir" | awk -F " " '{print $NF}' | grep -E "^\." | wc -l`
+        echo $k
+done

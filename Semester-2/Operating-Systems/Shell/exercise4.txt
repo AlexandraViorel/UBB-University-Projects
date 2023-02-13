@@ -1,0 +1,47 @@
+#We receive user and dirs. List all files from the dir that belongs to the user.
+
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+        echo "Invalid number of parameters!"
+        exit 1
+fi
+
+user=$1
+re='^[a-z]{4}[0-9]{4}$'
+
+if [[ ! $user =~ $re ]]; then
+        echo "Invalid username!"
+        exit 1
+fi
+
+shift 1
+for dir in $@
+do
+        if [ ! -d $dir ]; then
+                echo "Invalid directory!"
+                exit 1
+        fi
+done
+
+data=$(cat '/etc/passwd' | grep -E "^${user}")
+
+if [ ! -z "$user" ]; then
+        homedir=$(echo "$data" | awk -F ":" '{print $(NF-1)}')
+        if [ -r "$homedir" ]; then
+                for dir in $(find "$homedir" -type d)
+                do
+                        for dir1 in $@
+                        do
+                                dir2=$(echo "$dir" | awk -F "/" '{print $(NF)}')
+                                if [[ $dir2 == $dir1 ]]; then
+                                        find $dir -type f
+                                fi
+                        done
+                done
+        else
+                echo "No permissions!"
+        fi
+else
+        echo "User not found!"
+fi

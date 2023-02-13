@@ -1,0 +1,31 @@
+#We receive list of arguments. If it is directory it prints the fullname of the owner and the largest file. If it is file it prints it
+in reverse order.
+
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+        echo "Invalid number of parameters!"
+        exit 1
+fi
+
+for arg in $@
+do
+        if [ -d $arg ]; then
+                ls -ld $arg
+                N=`ls -ld $arg | awk '{print $3}'`
+                echo $N
+                data=`cat /etc/passwd | grep -E "^$N"`
+                echo $data
+                name=`echo ${data} | awk -F ":" '{print $5}'`
+                homedir=`echo ${data} | awk -F ":" '{print $6}'`
+                echo $name
+                echo $homedir
+                largest=`find "$arg" -type f | sort -nr | head -n 1`
+                echo "The largest file is: $largest"
+        elif [ -f $arg ]; then
+                echo "The file in reverse order is: "
+                tac "$arg"
+        else
+                echo "Invalid input!"
+        fi
+done
