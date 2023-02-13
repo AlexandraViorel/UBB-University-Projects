@@ -7,7 +7,6 @@ Assignments and projects done for the University.
     * [:books: Fundamentals of Programming](Semester1/Fundamentals-of-Programming/)
 * [:computer: Semester 2](Semester-2/)
     * [:books: Data Structures and Algorithms](Semester-2/Data-Structures-and-Algorithms/)
-    * [:books: Dynamical Systems](Semester2/Dynamical%20Systems/)
     * [:books: Graph Algorithms](Semester-2/Graph-Algorithms/)
     * [:books: Object Oriented Programming](Semester-2/Object-Oriented-Programming/)
     * [:books: Operating Systems](Semester-2/Operating-Systems/)
