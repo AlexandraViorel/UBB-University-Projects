@@ -1,0 +1,53 @@
+% 1. a) Sort a list with removing the double values
+
+% split(L1- list to be splitted, L2- left part, L3- right part)
+% flow model (i, o, o)
+
+split([], [], []).
+split([A], [A], []).
+split([H1, H2|T1], [H1|T2], [H2|T3]):-
+    split(T1, T2, T3).
+
+% merge(L1 - list, L2 - list, R - result)
+% flow model(i, i, o)
+
+merge(A, [], A).
+merge([], A, A).
+merge([H1|T1], [H2|T2], [H1|R]):-
+    H1<H2,
+    merge(T1, [H2|T2], R).
+merge([H1|T1], [H2|T2], [H2|R]):-
+    H1>H2,
+    merge([H1|T1], T2, R).
+merge([H1|T1], [H2|T2], R):-
+    H1=:=H2,
+    merge(T1, [H2|T2], R).
+
+% mergeSort(L - list to be sorted, R - sorted list)
+% flow model (i, o)
+
+mergeSort([], []).
+mergeSort([A], [A]).
+mergeSort([H1, H2|T], R):-
+    split([H1, H2|T], Left, Right),
+    mergeSort(Left, ResLeft),
+    mergeSort(Right, ResRight),
+    merge(ResLeft, ResRight, R).
+
+
+% 1. b) For a heterogeneous list, formed from integer numbers and list of numbers, 
+% write a predicate to sort every sublist with removing the doubles.
+
+% process(L-heterogeneous list, R-result list)
+% flow model (i, o)
+
+process([], []).
+process([H|T], [S|R]):-
+    is_list(H),
+    mergeSort(H, S),
+    process(T, R).
+process([H|T], [H|R]):-
+    process(T, R).
+
+
+
