@@ -1,4 +1,4 @@
-# UBB-University-Projects
+# UBB Computer Science : University Projects
 Assignments and projects done for the University.
 
 * [:computer: Semester 1](Semester-1/)
