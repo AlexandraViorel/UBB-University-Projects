@@ -1,0 +1,117 @@
+proc6
+
+
+// A.c
+
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <string.h>
+
+int main(int argc, char** argv) {
+        mkfifo(argv[1], 0600);
+        int fd_fifo = open(argv[1], O_WRONLY);
+        int p1p2[2];
+        pipe(p1p2);
+        char c;
+        char path[100];
+        char path1[100];
+        FILE *fptr;
+        int f, f1;
+        int fa=0, fo=0, fe=0, fu=0, fi=0;
+        int length, length1;
+        f = fork();
+        if (f == 0) {
+                close(p1p2[0]);
+                printf("Path: ");
+                scanf("%s", path);
+                length=strlen(path) + 1;
+                write(p1p2[1], &length, sizeof(int));
+                write(p1p2[1], path, length);
+                close(p1p2[1]);
+                exit(0);
+        }
+        else {
+                f1 = fork();
+                if (f1 == 0) {
+                        close(p1p2[1]);
+                        read(p1p2[0], &length1, sizeof(int));
+                        read(p1p2[0], &path1, sizeof(char) * (length1));
+                        printf("%s", path);
+                        fptr=fopen(path1, "r");
+                        while (fscanf(fptr, "%c", &c) > 0) {
+                                printf("%c\n", c);
+                                if (c == 'A') {
+                                        fa++;
+                                }
+                                else if (c == 'E') {
+                                        fe++;
+                                }
+                                else if (c == 'I') {
+                                        fi++;
+                                }
+                                else if (c == 'U') {
+                                        fu++;
+                                }
+                                else if (c == 'O') {
+                                        fo++;
+                                }
+                        }
+                        write(fd_fifo, &fa, sizeof(int));
+                        write(fd_fifo, &fe, sizeof(int));
+                        write(fd_fifo, &fi, sizeof(int));
+                        write(fd_fifo, &fo, sizeof(int));
+                        write(fd_fifo, &fu, sizeof(int));
+                        fclose(fptr);
+                        close(p1p2[0]);
+                        exit(0);
+                }
+                else {
+                        close(p1p2[0]);
+                        close(p1p2[1]);
+                }
+                wait(0);
+        }
+        wait(0);
+        close(fd_fifo);
+
+
+        return 0;
+}
+
+
+// B.c
+
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+
+int main(int argc, char** argv) {
+        int fd_fifo = open(argv[1], O_RDONLY);
+        int fa, fe, fi, fo, fu;
+        read(fd_fifo, &fa, sizeof(int));
+        read(fd_fifo, &fe, sizeof(int));
+        read(fd_fifo, &fi, sizeof(int));
+        read(fd_fifo, &fo, sizeof(int));
+        read(fd_fifo, &fu, sizeof(int));
+        printf("nb of A = %d\n", fa);
+        printf("nb of E = %d\n", fe);
+        printf("nb of I = %d\n", fi);
+        printf("nb of O = %d\n", fo);
+        printf("nb of U = %d\n", fu);
+
+        close(fd_fifo);
+        unlink(argv[1]);
+        return 0;
+}
+
