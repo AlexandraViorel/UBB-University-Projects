@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+typedef struct{
+char* nume_fisier;
+char c;
+int n;
+}structura;
+
+pthread_mutex_t m;
+
+void *f(void *f_thread)
+{
+	int nr=1;
+	char ch;
+	structura s=*(structura*)f_thread;
+	FILE* fisier=fopen(s.nume_fisier,"r");
+	if(fisier==NULL) 
+	{
+		printf("Fisierul nu s-a deschis.\n");
+		return NULL;
+	}
+	//printf("caracter:%c, numar:%d\n",s.c,s.n);
+	pthread_mutex_lock(&m);
+	while(fscanf(fisier,"%c",&ch)!=EOF && nr<=s.n)
+	{
+		if(nr==s.n && ch==s.c)
+		{
+		printf("caracter:%c, numar:%d\n",s.c,s.n);
+		printf("A fost gasit caracterul cautat, care este %c.\n",s.c);
+		break;
+		}
+		else if(nr==s.n && ch!=s.c)
+		{
+		printf("caracter:%c, numar:%d\n",s.c,s.n);
+		printf("Caracterul nu corespunde.\n");
+		}
+		nr++;
+	}
+	if(s.n>nr)
+	{ 
+		printf("caracter:%c, numar:%d\n",s.c,s.n);
+		printf("Numarul dat ca parametru este prea mare.\n");
+	}
+	pthread_mutex_unlock(&m);
+	fclose(fisier);
+	free(f_thread);
+	return NULL;
+		
+}
+
+
+int main(int argc,char* argv[])
+{
+	int i;
+	pthread_t *t=malloc(((argc-1)/3)*sizeof(pthread_t));
+	pthread_mutex_init(&m,NULL);
+	for(i=0; i<argc-1; i=i+3)
+	{
+		structura *s=malloc(sizeof(structura));;
+		s->nume_fisier=argv[i+1];
+		s->n=atoi(argv[i+2]);
+		s->c=argv[i+3][0];
+		pthread_create(&t[i/3],NULL,f,(void*)s);
+	}
+	for(i=0; i<argc-1; i=i+3)
+	pthread_join(t[i/3],NULL);
+	pthread_mutex_destroy(&m);
+	free(t);
+	return 0;
+}

@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+typedef struct
+{
+        int x;
+        int y;
+} data;
+
+int a=0, b=0;
+pthread_mutex_t m;
+
+void *funct(void* arg)
+{
+        data d = *(data*) arg;
+        int i;
+        for (i=0; i<d.y; i++)
+        {
+                pthread_mutex_lock(&m);
+                printf("1. Values: a=%d, b=%d, x=%d, y=%d\n", a, b, d.x, d.y);
+                a=a+b;
+                a=a+d.x;
+                b=d.x;
+                printf("2. Values: a=%d, b=%d, x=%d, y=%d\n", a, b, d.x, d.y);
+                pthread_mutex_unlock(&m);
+        }
+        free(arg);
+        return NULL;
+}
+
+int main(int argc, char** argv)
+{
+        int i;
+        pthread_t* t = malloc(((argc-1)/2)*sizeof(pthread_t));
+        pthread_mutex_init(&m, NULL);
+        for (i=0; i<argc-1; i=i+2)
+        {
+                data* d = malloc(sizeof(data));
+                d->x=atoi(argv[i+1]);
+                d->y=atoi(argv[i+2]);
+                pthread_create(&t[i/2],NULL,funct,(void*)d);
+        }
+        for (i=0; i<(argc-1)/2; i++)
+        {
+                pthread_join(t[i], NULL);
+        }
+        pthread_mutex_destroy(&m);
+        free(t);
+        return 0;
+}

@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+pthread_mutex_t mc,ml;
+int nr_cifre,nr_litere;
+
+typedef struct{
+char* nume_fisier;
+}structura;
+
+
+void *f(void *f_thread)
+{
+	char ch;
+	structura a=*(structura*)f_thread;
+	FILE* fisier=fopen(a.nume_fisier,"r");
+	while(fscanf(fisier,"%c",&ch)!=EOF)
+	{
+		if(ch>='0' && ch<='9') 
+		{
+			pthread_mutex_lock(&mc);
+			nr_cifre++;
+			pthread_mutex_unlock(&mc);
+		}
+		else if((ch>='a' && ch<='z') || (ch>='A' && ch<='Z'))
+		{
+			pthread_mutex_lock(&ml);
+			nr_litere++;
+			pthread_mutex_unlock(&ml);
+		}
+	}
+	fclose(fisier);
+	free(f_thread);   //!!
+	return NULL;	
+}
+
+
+int main(int argc,char* argv[])
+{
+	int i;
+	pthread_t *t=malloc((argc-1)*sizeof(pthread_t));
+	pthread_mutex_init(&mc,NULL);
+	pthread_mutex_init(&ml,NULL);
+	for(i=0; i<argc-1; i++)
+	{
+		structura *a=malloc(sizeof(structura));
+		a->nume_fisier=argv[i+1];
+		pthread_create(&t[i],NULL,f,(void*)a);
+	}
+	for(i=0; i<argc-1; i++)
+	pthread_join(t[i],NULL);
+	pthread_mutex_destroy(&mc);
+	pthread_mutex_destroy(&ml);
+	free(t);
+	printf("Caractere: %d   Cifre:%d\n",nr_litere,nr_cifre);
+	return 0;
+}

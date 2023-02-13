@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+
+typedef struct{
+int index;
+char* nume_fisier;
+}structura;
+
+
+int *var;
+pthread_mutex_t m;
+pthread_cond_t c;
+
+
+
+void *fx(void *pth_x)
+{
+	structura s=*(structura*)pth_x;
+	char* filename=s.nume_fisier;
+	FILE *fisier=fopen(filename,"r");
+	int a=0,b=0,suma=0,i=s.index;
+	fscanf(fisier,"%d %d",&a,&b);
+	fclose(fisier);
+	while(suma<=b)
+	{
+		pthread_mutex_lock(&m);
+		var[i]=var[i]+a;
+		if(var[i]>b)
+		{
+			printf("Thread-ul x=%d,var[%d]=%d a depasit valoarea lui b=%d.\n",i,i,var[i],b);
+			pthread_cond_signal(&c);
+		}
+		pthread_mutex_unlock(&m);
+		suma=suma+a;
+	}
+	//free(pth_x);
+	return NULL;
+}
+
+
+void *fy(void *pth_y)
+{
+	structura s=*(structura*)pth_y;
+	int i=s.index;
+	char* filename=s.nume_fisier;
+	FILE* fisier=fopen(filename,"r");
+	int a=0,b=0;	
+	fscanf(fisier,"%d %d",&a,&b);
+	fclose(fisier);	
+	pthread_mutex_lock(&m);
+	while(var[i]<=b)
+	{
+		pthread_cond_wait(&c,&m);
+	}
+	printf("Variabila cu indicele %d are valoarea %d(multiplu de %d)\n", i, var[i], a);
+	pthread_mutex_unlock(&m);
+	free(pth_y);
+	return NULL;
+}
+
+
+
+
+int main(int argc,char* argv[])
+{
+	int i;
+	var=malloc((argc-1)*sizeof(int));
+	pthread_t *x=malloc((argc-1)*sizeof(pthread_t));
+	pthread_t *y=malloc((argc-1)*sizeof(pthread_t));
+	pthread_mutex_init(&m,NULL);
+	pthread_cond_init(&c,NULL);
+	for(int i=0; i<argc-1; i++)
+	{
+		structura* s=(structura*)malloc(sizeof(structura));
+		s->index=i;
+		s->nume_fisier=argv[i+1];
+		var[i]=0;
+		pthread_create(&x[i],NULL,fx,(void*)s);
+		pthread_create(&y[i],NULL,fy,(void*)s);
+	}
+	for(i=0; i<argc-1; i++)
+	{
+		pthread_join(x[i],NULL);
+		pthread_join(y[i],NULL);
+	}
+	pthread_mutex_destroy(&m);
+	pthread_cond_destroy(&c);
+	free(x);
+	free(y);
+	free(var);
+	return 0;
+}

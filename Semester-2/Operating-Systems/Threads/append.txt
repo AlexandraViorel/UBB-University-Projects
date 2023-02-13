@@ -1,0 +1,61 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <pthread.h>
+
+typedef struct
+{
+        int index;
+}data;
+
+int *v;
+int poz[11];
+int k=0, n;
+pthread_barrier_t b;
+pthread_mutex_t m;
+
+void *f(void *arg)
+{
+        data d = *(data*)arg;
+        pthread_barrier_wait(&b);
+        int i;
+        for (i=0; i<10; i++)
+        {
+                pthread_mutex_lock(&m);
+                v[k] = d.index;
+                poz[d.index] = k;
+                k = k + 1;
+                pthread_mutex_unlock(&m);
+
+        }
+        free(arg);
+        printf("Threadul %d a pus ultima valoare pe pozitia %d\n", d.index, poz[d.index]);
+
+        return NULL;
+}
+
+int main(int argc, char** argv)
+{
+        int n;
+        n = atoi(argv[1]);
+        pthread_t *t = malloc(n*sizeof(pthread_t));
+        pthread_barrier_init(&b, NULL, n);
+        pthread_mutex_init(&m, NULL);
+        v = (int*)malloc(n*10*sizeof(int));
+        int i;
+        for (i=0; i<n; i++)
+        {
+                data *d = malloc(sizeof(data));
+                d->index = i;
+                pthread_create(&t[i], NULL, f, (void*)d);
+        }
+        for (i=0; i<n; i++)
+        {
+                pthread_join(t[i], NULL);
+        }
+        pthread_barrier_destroy(&b);
+        pthread_mutex_destroy(&m);
+        free(t);
+        free(v);
+        return 0;
+
+}
