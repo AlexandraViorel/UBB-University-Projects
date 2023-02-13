@@ -1,0 +1,106 @@
+% Five businessmen are side by side at a coffee shop in an airport. 
+% Follow the clues to figure out who is traveling to São Paulo, Brazil.
+
+/* 
+   1. The youngest businessman is exactly to the left of the man whose gate is 12.
+   2. The man who is going to Sydney is somewhere to the right of the man wearing the Black tie.
+   3. The 60-year-old man is going to South Africa.
+   4. Travis is somewhere between the man that will depart at 19:00 and Shawn, in that order.
+   5. Joseph is next to the businessman that is going to Tokyo.
+   6. The man wearing the Black tie is next to the man whose gate is 5.
+   7. The businessman whose gate is 17 is somewhere to the right of the man wearing the Red tie.
+   8. At one of the ends is the businessman who is going to Japan.
+   9. The man wearing the White tie is somewhere to the left of the man whose gate is 5.
+   10. At the fifth position is the 45-year-old businessman.
+   11. The man wearing the Blue tie is next to the man who will depart at 18:00.
+   12. The man wearing the White tie is somewhere between the man whose gate is 7 and Dustin, in that order.
+   13. The 50-year-old business man is at one of the ends.
+   14. The flight to London will depart at 17:00.
+   15. At the fourth position is the businessman wearing the Red tie.
+   16. The 50-year-old man's gate is 7.
+   17. Marcus is at one of the ends.
+   18. The businessman wearing the White tie is next to the 55-year-old businessman.
+   19. The 40-year-old man's flight will depart at 19:00.
+   20. The man wearing the White tie is somewhere to the left of the man who will depart at 18:30.
+   21. Dustin is at one of the ends.
+*/
+
+:- use_rendering(table,
+                 [header(businessman('Tie', 'Name', 'Destination', 'Departure', 'Gate', 'Age'))]).
+
+nextToLeft(A, B, Ls):- 
+    append(_, [A, B|_], Ls).
+
+nextTo(A, B, Ls):-
+    append(_, [B, A|_], Ls).
+nextTo(A, B, Ls):-
+    append(_, [A, B|_], Ls).
+
+atAnyEnd(A, Ls):-
+    Ls = [A|_].
+atAnyEnd(A, Ls):-
+    Ls = [_,_,_,_,A].
+
+somewhereLeft(A, B, Ls):-
+    append(_, [A, B|_], Ls).
+somewhereLeft(A, B, Ls):-
+    append(_, [A, _, B|_], Ls).
+somewhereLeft(A, B, Ls):-
+    append(_, [A, _, _, B|_], Ls).
+somewhereLeft(A, B, Ls):-
+    append(_, [A, _, _, _, B|_], Ls).
+
+somewhereBetween(A, B, C, Ls):-
+    somewhereLeft(A, B, Ls),
+    somewhereLeft(B, C, Ls).
+
+businessmen(Businessmen):-
+    % each businessman in the group is repesented as:
+    %	businessman(Tie, Name, Destination, Departure, Gate, Age)
+	length(Businessmen, 5),
+    nextToLeft(businessman(_, _, _, _, _, 40), businessman(_, _, _, _, 12, _), Businessmen), %1
+    somewhereLeft(businessman(black, _, _, _, _, _), businessman(_, _, sydney, _, _, _), Businessmen), %2
+    member(businessman(_, _, johannesburg, _, _, 60), Businessmen), %3
+    somewhereBetween(businessman(_, _, _, 19:00, _, _), businessman(_, travis, _, _, _, _), businessman(_, shawn, _, _, _, _), Businessmen), %4
+    nextTo(businessman(_, joseph, _, _, _, _), businessman(_, _, tokyo, _, _, _), Businessmen), %5
+    nextTo(businessman(black, _, _, _, _, _), businessman(_, _, _, _, 5, _), Businessmen), %6
+    somewhereLeft(businessman(red, _, _, _, _, _), businessman(_, _, _, _, 17, _), Businessmen), %7
+    atAnyEnd(businessman(_, _, tokyo, _, _, _), Businessmen), %8
+    somewhereLeft(businessman(white, _, _, _, _, _), businessman(_, _, _, _, 5, _), Businessmen), %9
+    Businessmen = [_, _, _, _, businessman(_, _, _, _, _, 45)], %10
+    nextTo(businessman(blue, _, _, _, _, _), businessman(_, _, _, 18:00, _, _), Businessmen), %11
+    somewhereBetween(businessman(_, _, _, _, 7, _), businessman(white, _, _, _, _, _), businessman(_, dustin, _, _, _, _), Businessmen), %12
+    atAnyEnd(businessman(_, _, _, _, _, 50), Businessmen), %13
+    member(businessman(_, _, london, 17:00, _, _), Businessmen), %14
+    Businessmen = [_, _, _, businessman(red, _, _, _, _, _), _], %15
+    member(businessman(_, _, _, _, 7, 50), Businessmen), %16
+    atAnyEnd(businessman(_, marcus, _, _, _, _), Businessmen), %17
+    nextTo(businessman(white, _, _, _, _, _), businessman(_, _, _, _, _, 55), Businessmen), %18
+    member(businessman(_, _, _, 19:00, _, 40), Businessmen), %19
+    somewhereLeft(businessman(white, _, _, _, _, _), businessman(_, _, _, 18:30, _, _), Businessmen), %20
+    atAnyEnd(businessman(_, dustin, _, _, _, _), Businessmen), %21
+    member(businessman(green, _, _, _, _, _), Businessmen), % one businessman wears a green tie
+    member(businessman(_, _, _, 17:30, _, _), Businessmen), % one flight will depart at 17:30
+    member(businessman(_, _, saopaulo, _, _, _), Businessmen), % one businessman will go to Sao Paulo
+    member(businessman(_, _, _, _, 1, _), Businessmen). % one businessman has gate 1
+
+% Who is traveling to Sao Paulo?
+travel_to_sao_paulo(Businessman) :-
+    businessmen(Businessmen),
+    member(businessman(_, Businessman, saopaulo, _, _, _), Businessmen), 
+    !.
+
+/*
+ 	Example:
+    businessmen(B).
+    B = [businessman(green, marcus, tokyo, 17:30, 7, 50),
+    	 businessman(white, joseph, saopaulo, 19:00, 1, 40),
+         businessman(black, travis, london, 17:00, 12, 55),
+         businessman(red, shawn, johannesburg, 18:00, 5, 60),
+         businessman(blue, dustin, sydney, 18:30, 17, 45)]
+         
+    travel_to_sao_paulo(Businessman).
+    Businessman = joseph
+    
+*/
+    
