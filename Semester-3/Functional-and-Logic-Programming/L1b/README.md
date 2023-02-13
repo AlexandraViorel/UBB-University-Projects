@@ -14,8 +14,11 @@ B C
  / \
 D   E
 is represented as follows:
+
 (A 2 B 0 C 2 D 0 E 0) (1)
+
 (A (B) (C (D) (E))) (2)
+
 Except for problems 4 and 9, conversion between types is not allowed; a direct method should be 
 used instead.
 
