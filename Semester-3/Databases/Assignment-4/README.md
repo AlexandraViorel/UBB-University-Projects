@@ -4,7 +4,7 @@ Your task is to implement a set of stored procedures to run tests and store thei
 
 - a table with a single-column primary key and no foreign keys;
 - a table with a single-column primary key and at least one foreign key;
-- a table with a multicolumn primary key,\\
+- a table with a multicolumn primary key,\
 
 and 3 views:
 
