@@ -1,4 +1,5 @@
 # UBB-University-Projects
+Assignments and projects done for the University.
 
 * [:computer: Semester 1](Semester-1/)
     * [:books: Computational Logic](Semester-1/Computational-Logic/)
