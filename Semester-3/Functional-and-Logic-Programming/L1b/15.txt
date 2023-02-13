@@ -1,0 +1,29 @@
+; 15. Determine the list of nodes accesed in postorder in a tree of type (2).
+
+; (car l) - the first element of the list is the root of the tree
+; (cadr l) - the second element of the list, at superficial level, is the left subtree
+; (caddr l) - the third element of the list, at the superficial level, is the right subtree
+
+; mathematical model:
+; myappend(l1l2...ln, p1p2...pm) = { p1p2...pm, if n = 0
+;                                  { {l1} U myappend(l2...ln, p1p2...pm), otherwise
+
+(defun myappend (l p)
+    (cond
+        ((null l) p)
+        (t (cons (car l) (myappend (cdr l) p)))
+    )
+)
+
+; mathematical model:
+; postorder(l1l2l3) = { nil, if l is empty
+;                     { myappend(postorder(l3), myappend(list(l1), postorder(l2))), otherwise
+
+(defun postorder (l)
+    (cond
+        ((null l) nil)
+        (t (myappend (postorder (caddr l)) (myappend (list (car l)) (postorder (cadr l)))))
+    )
+)
+
+(print (postorder '(A (B) (C (D) (E)))))

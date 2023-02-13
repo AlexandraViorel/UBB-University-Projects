@@ -1,0 +1,52 @@
+; 16. Determine if a tree of type (2) is ballanced (the difference between the depth of two subtrees is 
+; equal to 1).
+
+; mathematical model:
+; absolutediff(a, b) = { a - b, if a > b
+;                      { b - a, otherwise
+
+(defun absolutediff (a b)
+    (cond
+        ((> a b) (- a b))
+        (t (- b a))
+    )
+)
+
+; mathematical model:
+; mymax(a, b) = { a, if a >= b
+;               { b, otherwise
+
+(defun mymax (a b)
+    (cond
+        ((>= a b) a)
+        (t b)
+    )
+)
+
+; mathematical model:
+; finddepth(l1l2l3) = { 0, if l is empty
+;                     { 1 + mymax(finddepth(l2), finddepth(l3)), otherwise
+
+(defun finddepth (l)
+    (cond
+        ((null l) 0)
+        (t (+ 1 (mymax (finddepth (cadr l)) (finddepth (caddr l)))))
+    )
+)
+
+; mathematical model:
+; isbalanced(l1l2l3) = { t, if l is empty
+;                      { nil, if absolutediff(finddepth(l2), finddepth(l3)) > 1
+;                      { isbalanced(l2) and isbalanced(l3), otherwise
+
+(defun isbalanced (l)
+    (cond
+        ((null l) t)
+        ((> (absolutediff (finddepth (cadr l)) (finddepth (caddr l))) 1) nil)
+        (t (and (isbalanced (cadr l)) (isbalanced (caddr l))))
+    )
+)
+
+
+(print (isbalanced '(A (B (C) ()) ()))) ; no
+(print (isbalanced '(A (B (C) ()) (D)))) ; yes

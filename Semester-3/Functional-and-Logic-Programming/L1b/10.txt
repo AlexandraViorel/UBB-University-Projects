@@ -1,0 +1,22 @@
+; 10. Return the level of a node X in a tree of type (2). The level of the root element is 0.
+
+; (car l) - the first element of the list is the root of the tree
+; (cadr l) - the second element of the list, at superficial level, is the left subtree
+; (caddr l) - the third element of the list, at the superficial level, is the right subtree
+
+; mathematical model:
+; findlevel(l1l2l3, e, c) = { 0, if l is empty
+;                           { c, if l1 = e
+;                           { findlevel(l2, e, c+1) + findlevel(l3, e, c+1), otherwise
+
+(defun findlevel (l e c)
+    (cond
+        ((null l) 0)
+        ((equal (car l) e) c)
+        (t (+ (findlevel (cadr l) e (+ c 1)) (findlevel (caddr l) e (+ c 1))))
+    )
+)
+
+(defun main (l e)
+    (findlevel l e 0)
+)

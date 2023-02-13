@@ -1,0 +1,58 @@
+; 11. Return the level (and coresponded list of nodes) with maximum number of nodes for a tree of type 
+; (2). The level of the root element is 0.
+
+; (car l) - the first element of the list is the root of the tree
+; (cadr l) - the second element of the list, at superficial level, is the left subtree
+; (caddr l) - the third element of the list, at the superficial level, is the right subtree
+
+; mathematical model:
+; myappend(l1l2...ln, p1p2...pm) = { p1p2...pm, if n = 0
+;                                  { {l1} U myappend(l2...ln, p1p2...pm), otherwise
+
+(defun myappend (l p)
+    (cond
+        ((null l) p)
+        (t (cons (car l) (myappend (cdr l) p)))
+    )
+)
+
+; mathematical model:
+; mymax(a, b) = { a, if a >= b
+;               { b, otherwise
+
+(defun mymax (a b)
+    (cond
+        ((>= a b) a)
+        (t b)
+    )
+)
+
+; mathematical model:
+; findmaxlevel(l1l2l3, c) = { c, if l is empty
+;                           { mymax(findmaxlevel(l2, c+1), findmaxlevel(l3, c+1)), otherwise
+
+(defun findmaxlevel (l c)
+    (cond
+        ((null l) c)
+        (t (mymax (findmaxlevel (cadr l) (+ c 1)) (findmaxlevel (caddr l) (+ c 1))))
+    )
+)
+
+; mathematical model:
+; nodesfromlevel(l1l2l3, level, c) = { nil, if l is empty
+;                                    { l1, if level = c
+;                                    { myappend((list (nodesfromlevel(l2, level, c + 1))) (list (nodesfromlevel(l3, level, c + 1)))), otherwise
+
+(defun nodesfromlevel (l level c)
+    (cond
+        ((null l) nil)
+        ((equal level c) (car l))
+        (t (myappend (list (nodesfromlevel (cadr l) level (+ c 1))) (list (nodesfromlevel (caddr l) level (+ c 1)))))
+    )
+)
+
+(defun main (l)
+    (nodesfromlevel l (findmaxlevel l -1) 0)
+)
+
+(print (main '(1 (2 (3) (4)) (5 (6) (7)))))

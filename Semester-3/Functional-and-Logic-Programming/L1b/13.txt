@@ -1,0 +1,39 @@
+; 13. For a given tree of type (2) return the path from the root node to a certain given node X.
+
+; (car l) - the first element of the list is the root of the tree
+; (cadr l) - the second element of the list, at superficial level, is the left subtree
+; (caddr l) - the third element of the list, at the superficial level, is the right subtree
+
+
+
+; mathematical model:
+; exists(l1l2...ln, e) = { nil, if n = 0
+;                        { t, if l1 = e
+;                        { exists(l1, e) or exists(l2...ln, e), if l1 is a list
+;                        { exists(l2...ln, e), otherwise
+
+(defun exists (l e)
+    (cond
+        ((null l) nil)
+        ((equal (car l) e) t)
+        ((listp (car l)) (or (exists (car l) e) (exists (cdr l) e)))
+        (t (exists (cdr l) e))
+    )
+)
+
+; mathematical model:
+; path(l1l2l3, e) = { nil, if l is empty
+;                   { l1, if e = l1
+;                   { path(l2, e), if exists(l2, e)
+;                   { path(l3, e), if exists(l3, e)
+
+(defun path (l e)
+    (cond
+        ((null l) nil)
+        ((equal (car l) e) (list (car l)))
+        ((exists (cadr l) e) (cons (car l) (path (cadr l) e)))
+        ((exists (caddr l) e) (cons (car l) (path (caddr l) e)))    
+    )
+)
+
+(print (path '(1 (2) (3 (4) (5))) 5))
