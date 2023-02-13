@@ -1,9 +1,12 @@
 # L1b : Recursive programming in Lisp
 
 Write recursive Lisp functions for the following problems (optionally, you may use MAP functions):
+
 A binary tree is memorised in the following two ways:
+
 (node no-subtrees list-subtree-1 list-subtree-2 ...) (1)
 (node (list-subtree-1) (list-subtree-2) ...) (2)
+
 As an example, the tree
  A
 / \
