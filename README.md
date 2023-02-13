@@ -1,7 +1,7 @@
 # UBB-University-Projects
 
 * [Semester 1](Semester-1/)
-    * [ Computational Logic](Semester1/Computational%20Logic/)
+    * [ Computational Logic](Semester-1/Computational-Logic/)
     * [ Computer Systems Architecture](Semester1/ASC/)
     * [ Fundamentals of Programming](Semester1/Fundamentals-of-Programming/)
 * [Semester 2](Semester-2/)
