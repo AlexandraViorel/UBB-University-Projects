@@ -6,4 +6,3 @@
 - L1a: Recursive programming in Lisp
 - L1b: Recursive programming in Lisp (Trees)
 - L2: Using Map functions in Lisp
-- Seminar Bonus Problem: Backtracking in Prolog
